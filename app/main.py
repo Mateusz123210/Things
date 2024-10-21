@@ -1,9 +1,22 @@
 import uvicorn
 from fastapi import FastAPI
-from schemas import Email, Login, CategoryName, CategoryAdd, CategoryUpdate, ProductName, \
+from app.schemas import Email, Login, CategoryName, CategoryAdd, CategoryUpdate, ProductName, \
     ProductAdd, ProductUpdate, NoteName, NoteAdd, NoteUpdate
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+origins = [
+    "*"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post('/refresh-token')
 async def refresh_token(refresh_token: str):
@@ -28,10 +41,12 @@ async def refresh_password(data: Email):
 @app.post('/logout')
 async def logout(access_token: str):
     print("logged out")
+    return "logged out"
 
 @app.get('/category/all')
 async def get_categories(access_token: str):
-    print("all categories")
+    # print("all categories")
+    return "all categories"
 
 @app.post('/category')
 async def add_category(access_token: str, data: CategoryAdd):
@@ -86,5 +101,5 @@ async def delete_note(access_token: str, data: NoteName):
     print("note deleted")
 
 
-if __name__ == '__main__':
-    uvicorn.run(app, port=8000, host='0.0.0.0')
+# if __name__ == '__main__':
+#     uvicorn.run(app, port=8000, host='0.0.0.0')

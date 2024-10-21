@@ -1,0 +1,29 @@
+1. Create account on Azure using student email
+2. Add student subscription to account
+3. Download and install Azure CLI
+4. Download and install Docker
+5. Create ContainerRegistry on Azure (new resource group)
+6. Activate admin account on conteiner registry
+7. Connect to Azure from Docker
+open shell and go to folder with project
+az login
+az acr login -n things2024register.azurecr.io 	
+docker login things2024register.azurecr.io
+8. Create Dockerfile
+9. Push container image to ContainerRegistry on Azure
+
+Connect to Azure from Docker
+az account clear
+az config set core.enable_broker_on_windows=false
+az login
+az acr login -n things2024register.azurecr.io --expose-token
+docker login
+docker login things2024register.azurecr.io
+
+Push Image
+docker build . -t backend1
+docker tag backend1 things2024register.azurecr.io/backend1:latest
+docker push things2024register.azurecr.io/backend1:latest
+
+10. Create AppService
+11. Set continous deployment option on AppService
