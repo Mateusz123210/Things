@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+import datetime
 
 
 class Email(BaseModel):
@@ -97,6 +98,15 @@ class NoteUpdate(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+
+
+
+
+
+
+
 
 
 

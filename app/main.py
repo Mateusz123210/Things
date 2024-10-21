@@ -1,8 +1,12 @@
-import uvicorn
 from fastapi import FastAPI
-from app.schemas import Email, Login, CategoryName, CategoryAdd, CategoryUpdate, ProductName, \
-    ProductAdd, ProductUpdate, NoteName, NoteAdd, NoteUpdate
+from app.database import engine
+from app.database import Base
+from app.schemas import *
+from app import services
 from fastapi.middleware.cors import CORSMiddleware
+
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
@@ -32,7 +36,7 @@ async def login(data: Login):
 
 @app.post('/register')
 async def register(data: Login):
-    print("registered")
+    return services.register(data)
 
 @app.post('/refresh-password')
 async def refresh_password(data: Email):
