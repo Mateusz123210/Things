@@ -35,7 +35,7 @@ class CategoryAdd(CategoryName):
 
 class CategoryUpdate(BaseModel):
     old_name: str
-    name: str | None = None
+    name: str 
     photo: str | None = None
 
 
