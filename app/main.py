@@ -3,11 +3,10 @@ from fastapi import FastAPI
 from app.database import engine
 from app.database import Base
 from app.schemas import *
-from app import services
+from app import services, mongo_services
 from fastapi.middleware.cors import CORSMiddleware
 from threading import Thread
 import time
-
 
 
 class SecondThread:
@@ -79,65 +78,63 @@ async def refresh_token(refresh_token: str, email: str):
     return services.refresh_token(refresh_token, email)
 
 @app.delete('/account')
-async def delete_account(access_token: str):
-    print("account deleted")
+async def delete_account(access_token: str, email: str):
+    return services.delete_account(access_token, email)
 
 @app.get('/category/all')
-async def get_categories(access_token: str):
-    # print("all categories")
-    return "all categories"
+async def get_categories(access_token: str, email: str):
+    return mongo_services.get_user_categories(access_token, email)
 
 @app.post('/category')
-async def add_category(access_token: str, data: CategoryAdd):
-    print("category added")
+async def add_category(access_token: str, email: str, data: CategoryAdd):
+    return mongo_services.add_category(access_token, email, data)
 
 @app.put('/category')
-async def edit_category(access_token: str, data: CategoryUpdate):
-    print("category edited")
+async def edit_category(access_token: str, email: str, data: CategoryUpdate):
+    return mongo_services.edit_category(access_token, email, data)
 
 @app.delete('/category')
-async def delete_category(access_token: str, data: CategoryName):
-    print("category deleted")
+async def delete_category(access_token: str, email: str, data: CategoryName):
+    return mongo_services.delete_category(access_token, email, data)
 
 @app.get('/category-products')
-async def get_category_products(access_token: str, data: CategoryName):
-    print("all category_products")
+async def get_category_products(access_token: str, email: str, data: CategoryName):
+    return mongo_services.get_category_products(access_token, email, data)
 
 @app.get('/product')
-async def get_product(access_token: str, data: ProductName):
-    print("product fetched")
+async def get_product(access_token: str, email: str, data: ProductName):
+    return mongo_services.get_product(access_token, email, data)
 
 @app.post('/product')
-async def add_product(access_token: str, data: ProductAdd):
-    print("product added")
+async def add_product(access_token: str, email: str, data: ProductAdd):
+    return mongo_services.add_product(access_token, email, data)
 
 @app.put('/product')
-async def edit_product(access_token: str, data: ProductUpdate):
-    print("product edited")
+async def edit_product(access_token: str, email: str, data: ProductUpdate):
+    return mongo_services.edit_product(access_token, email, data)
 
 @app.delete('/product')
-async def delete_product(access_token: str, data: ProductName):
-    print("product deleted")
-
+async def delete_product(access_token: str, email: str, data: ProductName):
+    return mongo_services.delete_product(access_token, email, data)
 @app.get('/note/all')
-async def get_notes(access_token: str):
-    print("all notes")
+async def get_notes(access_token: str, email: str):
+    return mongo_services.get_notes(access_token, email)
 
 @app.get('/note')
-async def get_note(access_token: str, data: NoteName):
-    print("note")
+async def get_note(access_token: str, email: str, data: NoteName):
+    return mongo_services.get_note(access_token, email, data)
 
 @app.post('/note')
-async def add_note(access_token: str, data: NoteAdd):
-    print("note added")
+async def add_note(access_token: str, email: str, data: NoteAdd):
+    return mongo_services.add_note(access_token, email, data)
 
 @app.put('/note')
-async def edit_note(access_token: str, data: NoteUpdate):
-    print("note edited")
+async def edit_note(access_token: str, email: str, data: NoteUpdate):
+    return mongo_services.edit_note(access_token, email, data)
 
 @app.delete('/note')
-async def delete_note(access_token: str, data: NoteName):
-    print("note deleted")
+async def delete_note(access_token: str, email: str, data: NoteName):
+    return mongo_services.delete_note(access_token, email, data)
 
 
 # if __name__ == '__main__':

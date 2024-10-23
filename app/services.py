@@ -8,6 +8,7 @@ import datetime
 from app.schemas import *
 from app import validating
 from app.decorators.database import transactional
+from app.decorators.mongo_database import mongo_transactional
 import pytz
 from jose import jwt
 
@@ -200,6 +201,60 @@ def refresh_token(refresh_token, email):
                       refresh_token_expiration_time)
 
     return {"access_token": access_token, "refresh_token": refresh_token}
+
+@mongo_transactional
+@transactional
+def delete_account(access_token: str, email: str):
+    db_user = crud.get_user_by_email(email=email)
+    if db_user is None:
+        raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Could not validate credentials",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+    db_user_tokens = crud.get_user_tokens(db_user)
+
+    found = False
+    expired = True
+    found_token = None
+
+    for db_token in db_user_tokens:
+        try:
+            payload = jwt.decode(
+                access_token, db_token.access_token, algorithms=[ALGORITHM]
+            )
+            if payload["sub"] == email:
+                found = True
+                utc=pytz.UTC
+                datetime_now = datetime.datetime.now(datetime.UTC)
+                token_expiration_time = utc.localize(db_token.access_token_expiration_time)
+                if datetime_now <= token_expiration_time:
+                    expired = False    
+                    found_token = db_token            
+    
+        except(jwt.JWTError, ValidationError):
+            pass
+        
+    if found is False:
+        raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Could not validate credentials",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+    if expired is True:
+        raise HTTPException(
+                status_code = status.HTTP_401_UNAUTHORIZED,
+                detail="Token expired",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+    # crud.delete_token(found_token)
+    return {}
+
+
+
+
+
+
 
 # with open("./keys/second_server_url.env") as file:
 #     second_server_url = file.read()
@@ -530,51 +585,6 @@ def refresh_token(refresh_token, email):
 #     return True
 
 # @transactional
-# def validate_user_token(data):
-
-#     db_user = crud.get_user_by_email(email=data.email)
-#     if db_user is None:
-#         raise HTTPException(
-#                 status_code=status.HTTP_403_FORBIDDEN,
-#                 detail="User does not exist",
-#                 headers={"WWW-Authenticate": "Bearer"},
-#             )
-#     db_user_tokens = crud.get_user_tokens(db_user)
-
-#     found = False
-#     expired = True
-
-#     for db_token in db_user_tokens:
-#         try:
-#             payload = jwt.decode(
-#                 data.access_token, db_token.access_token, algorithms=[ALGORITHM]
-#             )
-#             if payload["sub"] == data.email:
-#                 found = True
-#                 utc=pytz.UTC
-#                 datetime_now = datetime.now(UTC)
-#                 token_expiration_time = utc.localize(db_token.access_token_expiration_time)
-#                 if datetime_now <= token_expiration_time:
-#                     expired = False                
-    
-#         except(jwt.JWTError, ValidationError):
-#             pass
-        
-#     if found is False:
-#         raise HTTPException(
-#                 status_code=status.HTTP_403_FORBIDDEN,
-#                 detail="Could not validate credentials",
-#                 headers={"WWW-Authenticate": "Bearer"},
-#             )
-#     if expired is True:
-#         raise HTTPException(
-#                 status_code = status.HTTP_401_UNAUTHORIZED,
-#                 detail="Token expired",
-#                 headers={"WWW-Authenticate": "Bearer"},
-#             )
-#     return data
-
-# @transactional
 # def validate_user_token_with_verification_if_user_logged(data):
 
 #     db_user = crud.get_user_by_email(email=data.email)
@@ -781,6 +791,8 @@ def refresh_token(refresh_token, email):
 #     callers = callers1 + callers2
 
 #     return {"message": "callers fetched", "callers": callers}
+
+
 
 @transactional
 def delete_expired_tokens():

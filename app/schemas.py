@@ -52,6 +52,7 @@ class ProductName(BaseModel):
     
 
 class ProductAdd(ProductName):
+    category_name: str
     quantity: str
     photo: str | None = None
     audio: str | None = None
