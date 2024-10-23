@@ -1,7 +1,8 @@
-from fastapi import HTTPException  #, Depends, Response, status
+from fastapi import HTTPException, status  #, Depends, Response, status
 # from fastapi.responses import JSONResponse
 # from fastapi.security import OAuth2PasswordRequestForm
 from app import crud
+from app.generators import jwt_token_generator
 from app.utils import create_access_token, create_refresh_token
 import datetime
 from app.schemas import *
@@ -19,45 +20,6 @@ from cryptography.fernet import Fernet
 
 from app import hashing, tokens_generator
 
-# with open("./keys/second_server_url.env") as file:
-#     second_server_url = file.read()
-
-# key = b'ftN9pKojZezJO0q_fBOlqAT5Iwh5Y_Ybref_KvOdlMY='
-# f = Fernet(key)
-
-# with open("./keys/secret_key.env", "rb") as encrypted_file:
-#     encrypted = encrypted_file.read()
-
-# token = f.decrypt(encrypted).decode("utf-8")
-
-# queue_sender = QueueSender()
-
-# @transactional
-# def delete_not_activated_users_and_all_tokens():
-#     users = crud.get_all_users()
-#     utc=pytz.UTC
-#     for db_user in users:
-#         if db_user and db_user.is_active is False: 
-
-#             datetime_now = datetime.now(UTC)
-#             confirmation_code_expiration_time = utc.localize(db_user.registration_confirmation_code_expiration_time)
-
-#             if datetime_now > confirmation_code_expiration_time or \
-#                 db_user.registration_confirmation_code_enter_attempts >=3:
-#                 crud.delete_user(db_user)
-    
-    # tokens = crud.get_all_tokens()
-    # for token in tokens:
-    #     if token.refresh_token is not None:
-            # datetime_now = datetime.now(UTC)
-    #         token_expiration_time = utc.localize(token.refresh_token_expiration_time)
-    #         if datetime_now > token_expiration_time:
-    #             crud.delete_token(token)
-    #     else:
-    #         datetime_now = datetime.now(UTC)
-    #         token_expiration_time = utc.localize(token.access_token_expiration_time)
-    #         if datetime_now > token_expiration_time:
-    #             crud.delete_token(token)
 
 @transactional
 def register(data: Login):
@@ -80,6 +42,180 @@ def register(data: Login):
                                last_login_attempt=datetime.datetime.now(datetime.UTC))
                                   
     return {}
+
+@transactional
+def login(data: Login):
+    
+    if validating.validate_email(data.email) is False:
+        raise HTTPException(status_code=400, detail="Email has invalid format")
+    
+    if validating.validate_password(data.password) is False:
+        raise HTTPException(status_code=400, detail="Password has invalid format")
+    
+    db_user = crud.get_user_by_email(email=data.email)
+
+    if db_user is None:
+        raise HTTPException(status_code=409, detail="Invalid email or password!")
+        
+    hashed_password = hashing.hash_password(data.password)
+
+    utc=pytz.UTC
+    
+    access_token_key = jwt_token_generator.generate_jwt_secret_key()
+
+    while check_access_token_key(db_user, access_token_key) is False:
+        access_token_key = jwt_token_generator.generate_jwt_secret_key()
+
+    refresh_token_key = jwt_token_generator.generate_jwt_secret_key()
+
+    while check_refresh_token_key(db_user, refresh_token_key) is False:
+        refresh_token_key = jwt_token_generator.generate_jwt_secret_key()
+
+    access_token = create_access_token(data.email, access_token_key)
+    refresh_token = create_refresh_token(data.email, refresh_token_key)
+
+    access_token_expiration_time = datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=15)
+    refresh_token_expiration_time = datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=60*24)
+
+    crud.login_user(db_user, access_token_key, access_token_expiration_time, refresh_token_key, 
+                    refresh_token_expiration_time)
+                                  
+    return {"access_token": access_token, "refresh_token": refresh_token}
+
+@transactional
+def refresh_password(data: Email):
+    raise HTTPException(status_code=501, detail="Not implemented yet!")
+
+@transactional
+def logout(access_token: str, email: str):
+    db_user = crud.get_user_by_email(email=email)
+    if db_user is None:
+        raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Could not validate credentials",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+    db_user_tokens = crud.get_user_tokens(db_user)
+
+    found = False
+    expired = True
+    found_token = None
+
+    for db_token in db_user_tokens:
+        try:
+            payload = jwt.decode(
+                access_token, db_token.access_token, algorithms=[ALGORITHM]
+            )
+            if payload["sub"] == email:
+                found = True
+                utc=pytz.UTC
+                datetime_now = datetime.datetime.now(datetime.UTC)
+                token_expiration_time = utc.localize(db_token.access_token_expiration_time)
+                if datetime_now <= token_expiration_time:
+                    expired = False    
+                    found_token = db_token            
+    
+        except(jwt.JWTError, ValidationError):
+            pass
+        
+    if found is False:
+        raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Could not validate credentials",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+    if expired is True:
+        raise HTTPException(
+                status_code = status.HTTP_401_UNAUTHORIZED,
+                detail="Token expired",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+    crud.delete_token(found_token)
+    return {}
+
+@transactional
+def refresh_token(refresh_token, email):
+    db_user = crud.get_user_by_email(email=email)
+    if db_user is None:
+        raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Could not validate credentials",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+    db_user_tokens = crud.get_user_tokens(db_user)
+
+    found_token = None
+    found = False
+    expired = True
+
+    for db_token in db_user_tokens:
+
+        try:
+            payload = jwt.decode(
+                refresh_token, db_token.refresh_token, algorithms=[ALGORITHM]
+            )
+            if payload["sub"] == email:
+                found = True
+                utc=pytz.UTC
+                datetime_now = datetime.datetime.now(datetime.UTC)
+                token_expiration_time = utc.localize(db_token.refresh_token_expiration_time)
+                if datetime_now <= token_expiration_time:
+                    expired = False       
+                    found_token = db_token         
+    
+        except(jwt.JWTError, ValidationError):
+            pass
+        
+    if found is False:
+        raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Could not validate credentials",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+    if expired is True:
+
+        raise HTTPException(
+                status_code = status.HTTP_401_UNAUTHORIZED,
+                detail="Token expired",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+    access_token_key = jwt_token_generator.generate_jwt_secret_key()
+
+    while check_access_token_key(db_user, access_token_key) is False:
+        access_token_key = jwt_token_generator.generate_jwt_secret_key()
+
+    refresh_token_key = jwt_token_generator.generate_jwt_secret_key()
+
+    while check_refresh_token_key(db_user, refresh_token_key) is False:
+        refresh_token_key = jwt_token_generator.generate_jwt_secret_key()
+
+    access_token = create_access_token(email, access_token_key)
+    refresh_token = create_refresh_token(email, refresh_token_key)
+
+    access_token_expiration_time = datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=15)
+    refresh_token_expiration_time = datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=60*24)
+
+    crud.update_token(found_token, access_token_key, access_token_expiration_time, refresh_token_key,
+                      refresh_token_expiration_time)
+
+    return {"access_token": access_token, "refresh_token": refresh_token}
+
+# with open("./keys/second_server_url.env") as file:
+#     second_server_url = file.read()
+
+# key = b'ftN9pKojZezJO0q_fBOlqAT5Iwh5Y_Ybref_KvOdlMY='
+# f = Fernet(key)
+
+# with open("./keys/secret_key.env", "rb") as encrypted_file:
+#     encrypted = encrypted_file.read()
+
+# token = f.decrypt(encrypted).decode("utf-8")
+
+# queue_sender = QueueSender()
+
+
+
 
 # def confirm_registration1(data: BasicConfirmationWithVerificationCode):
 #     result = confirm_registration(data)
@@ -182,41 +318,51 @@ def register(data: Login):
 #             "access_token": access_token,
 #             "refresh_token": refresh_token}
 
-# @transactional
-# def login(data: OAuth2PasswordRequestForm = Depends()):
-#     email = data.username    
-#     db_user = crud.get_user_by_email(email=email)
-#     if db_user is None:
-#         raise HTTPException(status_code=400, detail="Invalid username or password")
-#     if db_user.is_active is False:
-#         raise HTTPException(status_code=400, detail="User is not active!")
-#     hashed_password = main.objects[1].hash_password(data.password)
-#     if hashed_password != db_user.password:
-#         raise HTTPException(status_code=400, detail="Invalid username or password")
 
-#     verification_code = verification_code_generator.generate_verification_code()
-#     verification_code_expiration_time = datetime.now(UTC) + timedelta(minutes=15)
-#     access_token_key = jwt_token_generator.generate_jwt_secret_key()
-#     while check_access_token_key(db_user, access_token_key) is False:
-#         access_token_key = jwt_token_generator.generate_jwt_secret_key()
-#     access_token_expiration_time = datetime.now(UTC) + timedelta(minutes=15)
-#     access_token = create_access_token(email, access_token_key)
 
-#     crud.create_user_tokens2(db_user=db_user.id, access_token=access_token_key, refresh_token=None, 
-#                             access_token_expiration_time=access_token_expiration_time,
-#                             refresh_token_expiration_time=None,verification_code=verification_code,
-#                             verification_code_expiration_time=verification_code_expiration_time,
-#                             verification_code_type="login")
 
-#     try:
-#         mail_sender.send_email_with_verification_code_for_login(main.objects[0], email, verification_code)
-#     except Exception:
-#         raise HTTPException(
-#                 status_code=500,
-#                 detail="Internal Server Error",
-#             ) 
-#     return {"message": "Confirm login",
-#             "access_token": access_token}
+
+
+
+
+
+
+
+
+
+    # email = data.username    
+    # db_user = crud.get_user_by_email(email=email)
+    # if db_user is None:
+    #     raise HTTPException(status_code=400, detail="Invalid username or password")
+    # if db_user.is_active is False:
+    #     raise HTTPException(status_code=400, detail="User is not active!")
+    # hashed_password = main.objects[1].hash_password(data.password)
+    # if hashed_password != db_user.password:
+    #     raise HTTPException(status_code=400, detail="Invalid username or password")
+
+    # verification_code = verification_code_generator.generate_verification_code()
+    # verification_code_expiration_time = datetime.now(UTC) + timedelta(minutes=15)
+    # access_token_key = jwt_token_generator.generate_jwt_secret_key()
+    # while check_access_token_key(db_user, access_token_key) is False:
+    #     access_token_key = jwt_token_generator.generate_jwt_secret_key()
+    # access_token_expiration_time = datetime.now(UTC) + timedelta(minutes=15)
+    # access_token = create_access_token(email, access_token_key)
+
+    # crud.create_user_tokens2(db_user=db_user.id, access_token=access_token_key, refresh_token=None, 
+    #                         access_token_expiration_time=access_token_expiration_time,
+    #                         refresh_token_expiration_time=None,verification_code=verification_code,
+    #                         verification_code_expiration_time=verification_code_expiration_time,
+    #                         verification_code_type="login")
+
+    # try:
+    #     mail_sender.send_email_with_verification_code_for_login(main.objects[0], email, verification_code)
+    # except Exception:
+    #     raise HTTPException(
+    #             status_code=500,
+    #             detail="Internal Server Error",
+    #         ) 
+    # return {"message": "Confirm login",
+    #         "access_token": access_token}
 
 # def confirm_login1(data: BasicConfirmationWithVerificationCode):
 #     result = confirm_login(data)
@@ -635,3 +781,30 @@ def register(data: Login):
 #     callers = callers1 + callers2
 
 #     return {"message": "callers fetched", "callers": callers}
+
+@transactional
+def delete_expired_tokens():
+
+    tokens = crud.get_all_tokens()
+    for token in tokens:
+
+        utc=pytz.UTC
+        datetime_now = datetime.datetime.now(datetime.UTC)
+        token_expiration_time = utc.localize(token.refresh_token_expiration_time)
+
+        if datetime_now > token_expiration_time:
+            crud.delete_token(token)
+
+def check_access_token_key(user, access_token_key):
+    db_user_tokens = crud.get_user_tokens(user)
+    for db_token in db_user_tokens:
+        if db_token.access_token == access_token_key:
+            return False
+    return True
+
+def check_refresh_token_key(user, refresh_token_key):
+    db_user_tokens = crud.get_user_tokens(user)
+    for db_token in db_user_tokens:
+        if db_token.refresh_token == refresh_token_key:
+            return False
+    return True

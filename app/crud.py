@@ -22,9 +22,9 @@ from app.decorators.database import db
 def get_user_by_email(email: str, db):
     return db.query(models.User).filter(models.User.email == email).first()
 
-# @db
-# def get_all_tokens(db):
-#     return db.query(models.Token).all()
+@db
+def get_all_tokens(db):
+    return db.query(models.Token).all()
 
 # @db
 # def get_token(access_token, db):
@@ -38,6 +38,15 @@ def get_user_by_email(email: str, db):
 def create_user(email, password, last_login_attempt, db):
     db_user = models.User(email=email, password=password, last_login_attempt=last_login_attempt)
     db.add(db_user)
+    db.flush()
+
+@db
+def login_user(db_user, access_token, access_token_expiration_time, refresh_token, 
+               refresh_token_expiration_time, db):
+    db_token = models.Token(access_token=access_token, access_token_expiration_time=access_token_expiration_time,
+                            refresh_token=refresh_token, refresh_token_expiration_time=refresh_token_expiration_time,
+                            user_id=db_user.id)
+    db.add(db_token)
     db.flush()
 
 # @db
@@ -120,10 +129,10 @@ def create_user(email, password, last_login_attempt, db):
 #     return db.query(models.Key).filter(models.Key.first_user_id==first_user.id, 
 #                                        models.Key.second_user_id==second_user.id).first()
 
-# @db
-# def delete_token(token: models.Token, db):
-#     db.delete(token)
-#     db.flush()
+@db
+def delete_token(token: models.Token, db):
+    db.delete(token)
+    db.flush()
 
 # @db
 # def delete_user_tokens(user, db):
@@ -132,9 +141,9 @@ def create_user(email, password, last_login_attempt, db):
 #         db.delete(token)
 #     db.flush()
 
-# @db
-# def get_user_tokens(user, db):
-#     return db.query(models.Token).filter(models.Token.user_id == user.id).all()
+@db
+def get_user_tokens(user, db):
+    return db.query(models.Token).filter(models.Token.user_id == user.id).all()
 
 # @db
 # def activate_user(user, db):
@@ -144,13 +153,14 @@ def create_user(email, password, last_login_attempt, db):
 #         "registration_confirmation_code_enter_attempts": 0})
 #     db.flush()
 
-# @db
-# def update_token(found_token, new_token, db):
-#     db.query(models.Token).filter(models.Token.id==found_token.id).update({"access_token": new_token.access_token, 
-#                                 "access_token_expiration_time": new_token.access_token_expiration_time,
-#                                 "refresh_token": new_token.refresh_token, 
-#                                 "refresh_token_expiration_time": new_token.refresh_token_expiration_time})
-#     db.flush()
+@db
+def update_token(found_token, access_token, access_token_expiration_time, refresh_token, 
+                 refresh_token_expiration_time, db):
+    db.query(models.Token).filter(models.Token.id==found_token.id).update({"access_token": access_token, 
+                                "access_token_expiration_time": access_token_expiration_time,
+                                "refresh_token": refresh_token, 
+                                "refresh_token_expiration_time": refresh_token_expiration_time})
+    db.flush()
 
 # @db
 # def update_token_after_login(found_token, access_token: str, access_token_expiration_time: datetime,
