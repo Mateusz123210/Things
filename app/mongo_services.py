@@ -10,9 +10,16 @@ from app.schemas import *
 def get_user_categories(access_token, email, session):
     deps.validate_user_token(access_token, email)
 
-    # found_categories = collection_categories.find({})
+    found_user = collection_categories.find_one({"email": email}, session=session)
 
+    if found_user:
+        
+        found_categories = found_user["categories"]
 
+        return found_categories
+    
+    else:
+        return {}
 
 @mongo_transactional
 @transactional
@@ -78,9 +85,13 @@ def edit_category(access_token, email, data, session):
             if found_categories[found_category_index][1] != data.photo:
                 found_categories[found_category_index][1] = data.photo
 
+                                #Update all products - change category
+
+
+
                 filter = { '_id': found_user["_id"] }
                 new_values = { "$set": { 'categories': found_categories } }
-
+                
                 collection_categories.update_one(filter, new_values, session=session)
             
             else:
@@ -92,6 +103,11 @@ def edit_category(access_token, email, data, session):
                     raise HTTPException(status_code=400, detail="New category name already exists!")
             
             found_categories[found_category_index] = [data.name, data.photo]
+
+            #Update all products - change category
+
+
+
 
             filter = { '_id': found_user["_id"] }
             new_values = { "$set": { 'categories': found_categories } }
