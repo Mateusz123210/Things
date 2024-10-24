@@ -45,6 +45,7 @@ class CategoryUpdate(BaseModel):
 
 class ProductName(BaseModel):
     name: str 
+    category_name: str
 
 
     class Config:

@@ -11,6 +11,4 @@ except Exception as e:
     print(e)
 
 db = client.things
-collection_categories = db["categories"]
-collection_products = db["products"]
-collection_notes = db["notes"]
+collection_things = db["things"]
