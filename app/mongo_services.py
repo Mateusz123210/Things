@@ -396,99 +396,173 @@ def get_notes(access_token, email, session):
 
     deps.validate_user_token(access_token, email)
 
+    user = collection_things.find_one({"email": email}, session=session)
 
+    if user:
 
+        user_notes = user["notes"]
 
+        for i in range(len(user_notes)):
 
+            note_length = len(user_notes[i][1])
+
+            if note_length > 10:
+
+                user_notes[i][1] = user_notes[i][1] [:7] + "..."
+
+        return user_notes
+
+    return {}
 
 @mongo_transactional
 @transactional
 def get_note(access_token, email, data, session):
-    deps.validate_user_token(access_token, email)
-    print("val")
 
+    deps.validate_user_token(access_token, email)
+
+    if len(data.name) == 0:
+        raise HTTPException(status_code=400, detail="Note tittle not given!")
+
+    user = collection_things.find_one({"email": email}, session=session)
+
+    if user:
+
+        user_notes = user["notes"]
+
+        for i in range (len (user_notes)):
+            if data.name == user_notes[i][0]:
+                return user_notes[i]
+                
+    raise HTTPException(status_code=400, detail="Note does not exist!")
+    
 @mongo_transactional
 @transactional
 def add_note(access_token, email, data, session):
+
     deps.validate_user_token(access_token, email)
-    print("val")
+    
+    if len(data.name) == 0:
+        raise HTTPException(status_code=400, detail="Note title not given!")
+
+    user = collection_things.find_one({"email": email}, session=session)
+
+    if user:
+        
+        user_notes = user["notes"]
+
+        for i in range (len(user_notes)):
+            if data.name == user_notes[i][0]:
+                raise HTTPException(status_code=400, detail="You already have note with this title!")
+        
+        user_notes.append([data.name, data.text])
+
+        filter = { '_id': user["_id"] }
+        new_values = { "$set": { 'notes': user_notes } }
+
+        collection_things.update_one(filter, new_values, session=session)
+    
+    else:
+
+        insert_data = {"email": email, "categories": [], "products": [], "notes": [[data.name, data.text]]}
+        collection_things.insert_one(insert_data)
+
+    return {}
 
 @mongo_transactional
 @transactional
 def edit_note(access_token, email, data, session):
+
     deps.validate_user_token(access_token, email)
-    print("val")
+    
+    if len(data.old_name) == 0:
+        raise HTTPException(status_code=400, detail="Old note name not given!")
+    
+    if len(data.name) == 0:
+        raise HTTPException(status_code=400, detail="Note name not given!")
+
+    user = collection_things.find_one({"email": email}, session=session)
+
+    if user:
+        
+        user_notes = user["notes"]
+
+        note_index = None
+
+        for i in range (len(user_notes)):
+            if data.old_name == user_notes[i][0]:
+                note_index = i
+                
+        if note_index is None:
+            raise HTTPException(status_code=400, detail="Note does not exist!")
+        
+        if data.old_name == data.name:
+            if user_notes[note_index][1] != data.text:
+                user_notes[note_index][1] = data.text
+
+                filter = { '_id': user["_id"] }
+
+                new_values = { "$set": { 'notes': user_notes } }
+                
+                collection_things.update_one(filter, new_values, session=session)
+            
+            else:
+                raise HTTPException(status_code=400, detail="You have not changed anything!")
+        else:
+
+            for i in range (len(user_notes)):
+                if data.name == user_notes[i][0]:
+                    raise HTTPException(status_code=400, detail="New note title already exists!")
+            
+            user_notes[note_index] = [data.name, data.text]
+            
+            filter = { '_id': user["_id"] }
+            
+            new_values = { "$set": { 'notes': user_notes } }
+
+            collection_things.update_one(filter, new_values, session=session)
+    
+    else:
+
+        raise HTTPException(status_code=400, detail="Category does not exist!")
+
+    return {}
 
 @mongo_transactional
 @transactional
 def delete_note(access_token, email, data, session):
+
     deps.validate_user_token(access_token, email)
-    print("val")
+    
+    if len(data.name) == 0:
+        raise HTTPException(status_code=400, detail="Note title not given!")
 
+    user = collection_things.find_one({"email": email}, session=session)
 
-#     found_conversation = collection_name.find_one({"first_user": data["first_user"], "second_user": data["second_user"]},
-#                                                   session=session)
-#     if found_conversation:
-#         list1 = found_conversation["message"]
-#         return {"messages": list1}
-#     else:
-#         found_conversation = collection_name.find_one({"first_user": data["second_user"], "second_user": data["first_user"]},
-#                                                       session=session)
-#         if found_conversation:
-#             list1 = found_conversation["message"]
-#             reversed_list_for_second_caller = []
-#             for i in list1:
-#                 dictionary = i
-#                 for j in dictionary:
-#                     if dictionary[j] == "from_first":
-#                         dictionary[j] = "from_second"
-#                     else:
-#                         dictionary[j] = "from_first"
-#                 reversed_list_for_second_caller.append(dictionary)
-#             return {"messages": reversed_list_for_second_caller}
-#         else:
-#             raise HTTPException(status_code=204)
+    if user:
 
+        user_notes = user["notes"]
 
+        for i in range (len (user_notes)):
+            if data.name == user_notes[i][0]:
 
+                del user_notes[i]
 
+                filter = { '_id': user["_id"] }
+            
+                new_values = { "$set": { 'notes': user_notes } }
+                    
+                collection_things.update_one(filter, new_values, session=session)
 
+                return {}
+        
+        raise HTTPException(status_code=400, detail="Note does not exist!")
 
+    else: 
 
-#     if len(data["message"]) == 0:
-#         raise HTTPException(status_code=400, detail="You cannot send empty message!")
-#     found_conversation = collection_name.find_one({"first_user": data["first_user"], "second_user": data["second_user"]}, 
-#                                                   session=session)
-#     if found_conversation:
-#         list1 = found_conversation["message"]
-#         list1.append({data["message"]: "from_first"})
-#         filter = { '_id': found_conversation["_id"] }
-#         new_values = { "$set": { 'message': list1 } }
-#         collection_name.update_one(filter, new_values, session=session)
-#     else:
-#         found_conversation = collection_name.find_one({"first_user": data["second_user"], "second_user": data["first_user"]},
-#                                                       session=session)
-#         if found_conversation:
-#             list1 = found_conversation["message"]
-#             list1.append({data["message"]: "from_second"})
-#             filter = { '_id': found_conversation["_id"] }
-#             new_values = { "$set": { 'message': list1 } }
-#             collection_name.update_one(filter, new_values, session=session)
-#         else:
-#             insert_data = {"first_user": data["first_user"], "second_user": data["second_user"]}
-#             insert_data["message"] = [{data["message"]: "from_first"}]
-#             collection_name.insert_one(insert_data, session=session)
-
-#     return {"message": "Message sent!"}
-
-# @transactional
-# def delete_messages(data, session):
-#     found_conversation = collection_name.find_one_and_delete({"first_user": data["user"]}, session=session)
-#     if found_conversation:
-#         return {"message": "User messages has been deleted!"}
-#     else:
-#         found_conversation = collection_name.find_one_and_delete({"second_user": data["user"]}, session=session)
-#         if found_conversation:
-#             return {"message": "User messages has been deleted!"}
-#         else:
-#             return {"message": "User had no sended messages!"}
+        raise HTTPException(status_code=400, detail="Note does not exist!")
+    
+@mongo_transactional
+@transactional
+def delete_user(email: str, session):
+    
+    collection_things.find_one_and_delete({"email": email}, session=session)
