@@ -53,7 +53,6 @@ class ProductName(BaseModel):
     
 
 class ProductAdd(ProductName):
-    category_name: str
     quantity: str
     photo: str | None = None
     audio: str | None = None
@@ -64,7 +63,7 @@ class ProductAdd(ProductName):
         from_attributes = True
 
 
-class ProductUpdate(BaseModel):
+class ProductUpdate(ProductName):
     old_name: str
     quantity: str | None = None
     photo: str | None = None 

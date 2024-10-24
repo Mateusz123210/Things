@@ -304,20 +304,102 @@ def add_product(access_token, email, data, session):
 @mongo_transactional
 @transactional
 def edit_product(access_token, email, data, session):
+
     deps.validate_user_token(access_token, email)
-    print("val")
+
+    if len(data.old_name) == 0:
+        raise HTTPException(status_code=400, detail="Old product name not given!")
+    
+    if len(data.category_name) == 0:
+        raise HTTPException(status_code=400, detail="Category name not given!")
+    
+    if len(data.name) == 0:
+        raise HTTPException(status_code=400, detail="Product name not given!")
+
+    user = collection_things.find_one({"email": email}, session=session)
+
+    if user:
+        product_index = None
+
+        user_products = user["products"]
+
+        for i in range (len (user_products)):
+            if data.old_name == user_products[i][0] and data.category_name == user_products[i][1]:
+
+                product_index = i
+
+        if product_index is None:
+
+                raise HTTPException(status_code=400, detail="Product with this name does not exist!")
+
+        for i in range (len (user_products)):
+            if data.name == user_products[i][0] and data.category_name == user_products[i][1]:
+
+                raise HTTPException(status_code=400, detail="New product name already exists!")
+
+        user_products[product_index] = [data.name, data.category_name, data.quantity, data.photo, data.audio, data.video]
+
+        filter = { '_id': user["_id"] }
+            
+        new_values = { "$set": { 'products': user_products } }
+            
+        collection_things.update_one(filter, new_values, session=session)
+
+    else: 
+
+        raise HTTPException(status_code=400, detail="Category does not exist!")
+    
+    return {}
 
 @mongo_transactional
 @transactional
 def delete_product(access_token, email, data, session):
+
     deps.validate_user_token(access_token, email)
-    print("val")
+    
+    if len(data.name) == 0:
+        raise HTTPException(status_code=400, detail="Product name not given!")
+
+    user = collection_things.find_one({"email": email}, session=session)
+
+    if user:
+        product_index = None
+
+        user_products = user["products"]
+
+        for i in range (len (user_products)):
+            if data.name == user_products[i][0] and data.category_name == user_products[i][1]:
+
+                product_index = i
+
+        if product_index is None:
+
+                raise HTTPException(status_code=400, detail="Product with this name does not exist!")
+
+        del user_products[product_index]
+
+        filter = { '_id': user["_id"] }
+            
+        new_values = { "$set": { 'products': user_products } }
+            
+        collection_things.update_one(filter, new_values, session=session)
+
+    else: 
+
+        raise HTTPException(status_code=400, detail="Category does not exist!")
+    
+    return {}
 
 @mongo_transactional
 @transactional
 def get_notes(access_token, email, session):
+
     deps.validate_user_token(access_token, email)
-    print("val")
+
+
+
+
+
 
 @mongo_transactional
 @transactional
