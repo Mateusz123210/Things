@@ -2,7 +2,7 @@
 //  ContentView.swift
 //  Things
 //
-//  Created by MatKomp on 04/11/2024.
+//  Created by Mateusz Urbanczyk on 04/11/2024.
 //
 
 import SwiftUI
@@ -10,10 +10,8 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            
+            Text("My First App!")
         }
         .padding()
     }
