@@ -1,9 +1,3 @@
-//
-//  ContentView.swift
-//  Things
-//
-//  Created by Mateusz Urbanczyk on 04/11/2024.
-//
 
 import SwiftUI
 

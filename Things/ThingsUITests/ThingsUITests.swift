@@ -1,9 +1,3 @@
-//
-//  ThingsUITests.swift
-//  ThingsUITests
-//
-//  Created by MatKomp on 04/11/2024.
-//
 
 import XCTest
 
