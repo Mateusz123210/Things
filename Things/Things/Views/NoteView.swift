@@ -1,19 +1,22 @@
 import SwiftUI
 
-struct RefreshPasswordView: View{
+struct NoteView: View{
     
     @EnvironmentObject var router: Router
+    
+    var noteName: String
     
     
     var body: some View{
         
-        Text("ref")
+        Text("Note details")
         
+        
+        
+            
         
     }
     
     
     
-    
 }
-

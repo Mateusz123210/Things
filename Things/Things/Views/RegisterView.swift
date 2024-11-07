@@ -1,12 +1,9 @@
-//
-//  RegisterView.swift
-//  Things
-//
-//  Created by MatKomp on 05/11/2024.
-//
 import SwiftUI
 
 struct RegisterView: View{
+    
+    @EnvironmentObject var router: Router
+    
     @State private var email: String = ""
     @State private var password: String = ""
        
