@@ -28,11 +28,19 @@ struct RegisterView: View{
                 LogoImageView()
                 VStack{
                     Text("Register")
+                        .fontWeight(.semibold)
+                        .font(Font.system(size: 32))
                     Text("Email")
+                        .fontWeight(.light)
+                        .font(Font.system(size: 28))
+                        .foregroundStyle(.lightBlack202C37)
                     TextField("", text: $email)
                     //.frame(width: width90)
                         .background(Color.green)
                     Text("Password")
+                        .fontWeight(.light)
+                        .font(Font.system(size: 28))
+                        .foregroundStyle(.lightBlack202C37)
                     TextField("", text: $password)
                     //.frame(width:width90)
                         .background(Color.green)
@@ -42,9 +50,18 @@ struct RegisterView: View{
                 }
                 
                 Button("Register"){
-                    registerUser()
+                    //registerUser()
                 }
+                    .fontWeight(.bold)
+                    .font(Font.system(size: 32))
+                    .foregroundStyle(.black)
+                    .background(.lightBlueD6F1FF)
+                
+                
                 Text("Already have an account? Login")
+                    .fontWeight(.bold)
+                    .font(Font.system(size: 17))
+                    .foregroundStyle(.lightBlue00A7FF)
             }.padding(16)
         //}
     }
