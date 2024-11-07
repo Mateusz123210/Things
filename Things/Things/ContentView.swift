@@ -1,16 +1,13 @@
 
 import SwiftUI
+	
 
 struct ContentView: View {
-    var body: some View {
-        VStack {
-            
-            Text("My First App!")
-        }
-        .padding()
+    var body: some View{
+        //MainView()
+        RegisterView()
+        //LoginView()
     }
 }
 
-#Preview {
-    ContentView()
-}
+
