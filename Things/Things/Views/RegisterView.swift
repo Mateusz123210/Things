@@ -15,16 +15,22 @@ struct RegisterView: View{
         showAlert = true
     }
     
+    func registered(){
+        //print("Registered")
+        showAlert(message: "registered")
+    }
+    
     
     func registerUser(){
         let schema = RegisterSchema(email: email, password: password)
         registerService.registerUser(data: schema, viewRef: self)
+        
     }
     
     var body: some View{
         GeometryReader{ geometry in
             VStack{
-                let height = geometry.size.height
+                var height = geometry.size.height
                 VStack{
                 LogoImageView()
                 
@@ -49,7 +55,8 @@ struct RegisterView: View{
                     }
                 
                 Button("Register"){
-                    //registerUser()
+                    registerUser()
+
                 }   .fontWeight(.bold)
                     .font(Font.system(size: 32))
                     .foregroundStyle(.black)
@@ -62,7 +69,7 @@ struct RegisterView: View{
                     .foregroundStyle(.lightBlue00A7FF)
             }   .padding(16)
                 .background(.backgroundF7F7F7)
-            }  
+            }
         }
     }
 }
