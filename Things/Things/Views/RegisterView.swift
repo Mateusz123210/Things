@@ -47,8 +47,9 @@ struct RegisterView: View{
                     .fontWeight(.light)
                     .font(Font.system(size: 28))
                     .foregroundStyle(.lightBlack202C37)
-                TextField("", text: $password)
+                SecureField("", text: $password)
                     .background(.white)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
                 
                     .alert(isPresented: $showAlert){
                         Alert(title: Text("Error"), message: Text(alertMessage))
@@ -60,10 +61,13 @@ struct RegisterView: View{
                 }   .fontWeight(.bold)
                     .font(Font.system(size: 32))
                     .foregroundStyle(.black)
+                    .buttonStyle(.bordered)
                     .background(.lightBlueD6F1FF)
-                    .buttonStyle(.borderedProminent)
+                    .cornerRadius(15)
                 
-                Text("Already have an account? Login")
+                    Button("Already have an account? Login"){
+                        router.navigate(destination: .login)
+                    }
                     .fontWeight(.bold)
                     .font(Font.system(size: 17))
                     .foregroundStyle(.lightBlue00A7FF)
