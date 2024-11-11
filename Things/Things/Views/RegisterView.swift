@@ -8,6 +8,7 @@ struct RegisterView: View{
     @State private var password: String = "myPass123#"
     @State private var showAlert = false
     @State private var alertMessage = ""
+    
     let registerService = RegisterService()
     
     func showAlert(message: String){
