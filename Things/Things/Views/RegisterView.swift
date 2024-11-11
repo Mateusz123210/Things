@@ -17,9 +17,9 @@ struct RegisterView: View{
     
     func registered(){
         //print("Registered")
-        showAlert(message: "registered")
+        //showAlert(message: "registered")
+        router.navigate(destination: .login)
     }
-    
     
     func registerUser(){
         let schema = RegisterSchema(email: email, password: password)
@@ -51,7 +51,7 @@ struct RegisterView: View{
                     .background(.white)
                 
                     .alert(isPresented: $showAlert){
-                        Alert(title: Text("Important message"), message: Text(alertMessage))
+                        Alert(title: Text("Error"), message: Text(alertMessage))
                     }
                 
                 Button("Register"){
