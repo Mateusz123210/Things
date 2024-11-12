@@ -13,13 +13,14 @@ struct MainView: View{
     @State private var secondTextOpacity = 0.0
     @State private var buttonsOpacity = 0.0
     @State private var colorProgress = 0.0
-    //@State private var sizes: [String: [String: [CGFloat]]]
 
     var body: some View{
         Group {
             if(orientation == UIDeviceOrientation.landscapeLeft || orientation == UIDeviceOrientation.landscapeRight){
                 HStack {
-                    LogoImageView(opacity: logoOpacity)
+                    VStack{
+                        LogoImageView(opacity: logoOpacity)
+                    }.frame(width: screenWidth / 2)
                     VStack{
                         
                         Text("Things")
@@ -27,14 +28,14 @@ struct MainView: View{
                             .font(Font.system(size: 72))
                             .scaleEffect(textScale)
                             .foregroundStyle(animateColor(progress: colorProgress))
-                            .padding(.bottom, 0)
+                            .padding(.bottom, 0.2 * screenHeight)
                         
                         
                         Text("Manage your things easier")
                             .font(Font.system(size: 20))
                             .foregroundStyle(.lightBlack202C37)
                             .opacity(secondTextOpacity)
-                            .padding(.bottom, 0)
+                            .padding(.bottom, 0.05 * screenHeight)
                         
                         HStack{
                             Button("Sign in"){
@@ -58,11 +59,11 @@ struct MainView: View{
                                 .cornerRadius(15)
                                 .opacity(buttonsOpacity)
                         }
-                        //}
                     }   .padding(16)
                         .onAppear(perform: {
                             animate()
                         })
+                        .frame(width: screenWidth / 2)
                 }
             }else{
                 VStack{
@@ -105,7 +106,6 @@ struct MainView: View{
                             .cornerRadius(15)
                             .opacity(buttonsOpacity)
                     }
-                    //}
                 }   .padding(16)
                     .onAppear(perform: {
                         animate()
@@ -113,20 +113,18 @@ struct MainView: View{
             }
             
         } .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
-            
-            //updateScreenSize()
+
             
             if (UIDevice.current.orientation != UIDeviceOrientation.portraitUpsideDown){
                 orientation = UIDevice.current.orientation
             }
             
         }
-   
         .onChange(of: horizontalSizeClass) {
-            updateScreenSize() // Respond to iPad multitasking or orientation change
+            updateScreenSize()
         }
         .onChange(of: verticalSizeClass) {
-            updateScreenSize() // Respond to split view changes
+            updateScreenSize()
         }
 
     }
