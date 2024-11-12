@@ -3,61 +3,120 @@ import SwiftUI
 struct MainView: View{
     
     @EnvironmentObject var router: Router
+//    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+//    @Environment(\.verticalSizeClass) var verticalSizeClass
+    @State private var orientation: UIDeviceOrientation = UIDevice.current.orientation
     @State private var logoOpacity = 0.2
     @State private var textScale = 0.6
     @State private var secondTextOpacity = 0.0
     @State private var buttonsOpacity = 0.0
     @State private var colorProgress = 0.0
-    
+
     var body: some View{
-        //GeometryReader{ geometry in
-        VStack{
-            //var height = geometry.size.height
-            //var width = geometry.size.width
-            
-            LogoImageView(opacity: logoOpacity)
-            
-            Text("Things")
-                .bold()
-                .font(Font.system(size: 72))
-                .scaleEffect(textScale)
-                .foregroundStyle(animateColor(progress: colorProgress))
-            
-            
-            Text("Manage your things easier")
-                .font(Font.system(size: 20))
-                .foregroundStyle(.lightBlack202C37)
-                .opacity(secondTextOpacity)
-            
-            HStack{
-                Button("Sign in"){
-                    router.navigate(destination: .login)
-                }   .fontWeight(.bold)
-                    .font(Font.system(size: 32))
-                    .foregroundStyle(.black)
-                    .buttonStyle(.bordered)
-                    .background(.lightBlueD6F1FF)
-                    .cornerRadius(15)
-                    .opacity(buttonsOpacity)
-                
-                Button("Register"){
-                    router.navigate(destination: .register)
+        Group {
+            if(orientation == UIDeviceOrientation.landscapeLeft || orientation == UIDeviceOrientation.landscapeRight){
+                HStack {
+                    LogoImageView(opacity: logoOpacity)
+                    VStack{
+                        
+                        Text("Things")
+                            .bold()
+                            .font(Font.system(size: 72))
+                            .scaleEffect(textScale)
+                            .foregroundStyle(animateColor(progress: colorProgress))
+                            .padding(.bottom, 0)
+                        
+                        
+                        Text("Manage your things easier")
+                            .font(Font.system(size: 20))
+                            .foregroundStyle(.lightBlack202C37)
+                            .opacity(secondTextOpacity)
+                            .padding(.bottom, 0)
+                        
+                        HStack{
+                            Button("Sign in"){
+                                router.navigate(destination: .login)
+                            }   .fontWeight(.bold)
+                                .font(Font.system(size: 32))
+                                .foregroundStyle(.black)
+                                .buttonStyle(.bordered)
+                                .background(.lightBlueD6F1FF)
+                                .cornerRadius(15)
+                                .opacity(buttonsOpacity)
+                            
+                            Button("Register"){
+                                router.navigate(destination: .register)
+                                
+                            }   .fontWeight(.bold)
+                                .font(Font.system(size: 32))
+                                .foregroundStyle(.black)
+                                .buttonStyle(.bordered)
+                                .background(.lightBlueD6F1FF)
+                                .cornerRadius(15)
+                                .opacity(buttonsOpacity)
+                        }
+                        //}
+                    }   .padding(16)
+                        .onAppear(perform: {
+                            animate()
+                        })
+                }
+            }else{
+                VStack{
                     
-                }   .fontWeight(.bold)
-                    .font(Font.system(size: 32))
-                    .foregroundStyle(.black)
-                    .buttonStyle(.bordered)
-                    .background(.lightBlueD6F1FF)
-                    .cornerRadius(15)
-                    .opacity(buttonsOpacity)
+                    LogoImageView(opacity: logoOpacity)
+                    
+                    Text("Things")
+                        .bold()
+                        .font(Font.system(size: 72))
+                        .scaleEffect(textScale)
+                        .foregroundStyle(animateColor(progress: colorProgress))
+                        .padding(.bottom, 0)
+                    
+                    
+                    Text("Manage your things easier")
+                        .font(Font.system(size: 20))
+                        .foregroundStyle(.lightBlack202C37)
+                        .opacity(secondTextOpacity)
+                        .padding(.bottom, 0)
+                    
+                    HStack{
+                        Button("Sign in"){
+                            router.navigate(destination: .login)
+                        }   .fontWeight(.bold)
+                            .font(Font.system(size: 32))
+                            .foregroundStyle(.black)
+                            .buttonStyle(.bordered)
+                            .background(.lightBlueD6F1FF)
+                            .cornerRadius(15)
+                            .opacity(buttonsOpacity)
+                        
+                        Button("Register"){
+                            router.navigate(destination: .register)
+                            
+                        }   .fontWeight(.bold)
+                            .font(Font.system(size: 32))
+                            .foregroundStyle(.black)
+                            .buttonStyle(.bordered)
+                            .background(.lightBlueD6F1FF)
+                            .cornerRadius(15)
+                            .opacity(buttonsOpacity)
+                    }
+                    //}
+                }   .padding(16)
+                    .onAppear(perform: {
+                        animate()
+                    })
             }
-            //}
-        }   .padding(16)
-            .onAppear(perform: {
-                animate()})
-        //}
+            
+        } .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
+            if (UIDevice.current.orientation != UIDeviceOrientation.portraitUpsideDown){
+                orientation = UIDevice.current.orientation
+            }
+            
+        }
     }
-    
+
     func animate(){
             
             var counter = 0
@@ -104,4 +163,20 @@ struct MainView: View{
         let blue: Double = 1.0 - colorProgress * colorProgress * colorProgress
         return Color(red: 0.0, green: 0.0, blue: blue)
     }
+    
+//    private func paddingForSizeClass() -> CGFloat {
+//        if horizontalSizeClass == .compact && verticalSizeClass == .regular {
+//            // iPhone portrait mode
+//            return 20
+//        } else if horizontalSizeClass == .compact && verticalSizeClass == .compact {
+//            // iPhone landscape mode
+//            return 15
+//        } else if horizontalSizeClass == .regular && verticalSizeClass == .regular {
+//            // iPad portrait/landscape mode
+//            return 40
+//        } else {
+//            // Fallback for other configurations
+//            return 25
+//        }
+//    }
 }

@@ -3,6 +3,7 @@ import SwiftUI
 struct LogoImageView: View{
     
     var opacity: Double?
+    var padding: Float?
     
     var body: some View{
             
