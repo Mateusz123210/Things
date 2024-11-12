@@ -3,14 +3,17 @@ import SwiftUI
 struct MainView: View{
     
     @EnvironmentObject var router: Router
-//    @Environment(\.horizontalSizeClass) var horizontalSizeClass
-//    @Environment(\.verticalSizeClass) var verticalSizeClass
+    @State private var screenHeight = UIScreen.main.bounds.height
+    @State private var screenWidth = UIScreen.main.bounds.width
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.verticalSizeClass) var verticalSizeClass
     @State private var orientation: UIDeviceOrientation = UIDevice.current.orientation
     @State private var logoOpacity = 0.2
     @State private var textScale = 0.6
     @State private var secondTextOpacity = 0.0
     @State private var buttonsOpacity = 0.0
     @State private var colorProgress = 0.0
+    //@State private var sizes: [String: [String: [CGFloat]]]
 
     var body: some View{
         Group {
@@ -64,21 +67,21 @@ struct MainView: View{
             }else{
                 VStack{
                     
-                    LogoImageView(opacity: logoOpacity)
+                    LogoImageView(opacity: logoOpacity, padding: 0.1 * screenHeight)
                     
                     Text("Things")
                         .bold()
                         .font(Font.system(size: 72))
                         .scaleEffect(textScale)
                         .foregroundStyle(animateColor(progress: colorProgress))
-                        .padding(.bottom, 0)
+                        .padding(.bottom, 0.2 * screenHeight)
                     
                     
                     Text("Manage your things easier")
                         .font(Font.system(size: 20))
                         .foregroundStyle(.lightBlack202C37)
                         .opacity(secondTextOpacity)
-                        .padding(.bottom, 0)
+                        .padding(.bottom, 0.05 * screenHeight)
                     
                     HStack{
                         Button("Sign in"){
@@ -110,11 +113,27 @@ struct MainView: View{
             }
             
         } .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
+            
+            //updateScreenSize()
+            
             if (UIDevice.current.orientation != UIDeviceOrientation.portraitUpsideDown){
                 orientation = UIDevice.current.orientation
             }
             
         }
+   
+        .onChange(of: horizontalSizeClass) {
+            updateScreenSize() // Respond to iPad multitasking or orientation change
+        }
+        .onChange(of: verticalSizeClass) {
+            updateScreenSize() // Respond to split view changes
+        }
+
+    }
+    
+    private func updateScreenSize() {
+        screenHeight = UIScreen.main.bounds.height
+        screenWidth = UIScreen.main.bounds.width
     }
 
     func animate(){
@@ -163,20 +182,5 @@ struct MainView: View{
         let blue: Double = 1.0 - colorProgress * colorProgress * colorProgress
         return Color(red: 0.0, green: 0.0, blue: blue)
     }
-    
-//    private func paddingForSizeClass() -> CGFloat {
-//        if horizontalSizeClass == .compact && verticalSizeClass == .regular {
-//            // iPhone portrait mode
-//            return 20
-//        } else if horizontalSizeClass == .compact && verticalSizeClass == .compact {
-//            // iPhone landscape mode
-//            return 15
-//        } else if horizontalSizeClass == .regular && verticalSizeClass == .regular {
-//            // iPad portrait/landscape mode
-//            return 40
-//        } else {
-//            // Fallback for other configurations
-//            return 25
-//        }
-//    }
+
 }
