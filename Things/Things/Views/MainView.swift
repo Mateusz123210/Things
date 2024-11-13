@@ -64,7 +64,7 @@ struct MainView: View{
                             animate()
                         })
                         .frame(width: screenWidth / 2)
-                }
+                }.frame(height: screenHeight)
             }else{
                 VStack{
                     
@@ -106,10 +106,12 @@ struct MainView: View{
                             .cornerRadius(15)
                             .opacity(buttonsOpacity)
                     }
-                }   .padding(16)
+                }
                     .onAppear(perform: {
                         animate()
                     })
+
+                    .frame(height: screenHeight)
             }
             
         } .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in

@@ -8,9 +8,7 @@ struct NotesView: View{
     var body: some View{
         
         Text("All notes")
-        
-        
-        
+            
             
         
     }
