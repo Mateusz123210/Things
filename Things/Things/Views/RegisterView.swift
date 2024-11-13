@@ -73,7 +73,7 @@ struct RegisterView: View{
                         }.padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.005 * screenHeight)))
                         Button("Register"){
                             registerUser()
-
+                            
                         }   .fontWeight(.bold)
                             .font(Font.system(size: 32))
                             .foregroundStyle(.black)
@@ -94,7 +94,7 @@ struct RegisterView: View{
             }else{
                 VStack{
                     LogoImageView(padding: (screenHeight > 800 ? (0.08 * screenHeight) : (0.01 * screenHeight)), width: 60)
-
+                    
                     Text("Register")
                         .fontWeight(.semibold)
                         .font(Font.system(size: 40))
@@ -125,13 +125,13 @@ struct RegisterView: View{
                             .border(Color.gray, width: 1)
                     }.padding(.bottom,(screenHeight > 800 ? (0.02 * screenHeight) : (0.01 * screenHeight)))
                     
-                    .alert(isPresented: $showAlert){
-                        Alert(title: Text("Error"), message: Text(alertMessage))
-                    }
-
+                        .alert(isPresented: $showAlert){
+                            Alert(title: Text("Error"), message: Text(alertMessage))
+                        }
+                    
                     Button("Register"){
                         registerUser()
-
+                        
                     }   .fontWeight(.bold)
                         .font(Font.system(size: 32))
                         .foregroundStyle(.black)
@@ -139,27 +139,27 @@ struct RegisterView: View{
                         .background(.lightBlueD6F1FF)
                         .cornerRadius(15)
                         .padding(.bottom,(screenHeight > 800 ? (0.01 * screenHeight) : (0.005 * screenHeight)))
-    
-                    Button("Already have an account? Login"){
+                    
+                    Button("Already have an account? Sign in"){
                         router.navigate(destination: .login)
                     }
                     .fontWeight(.bold)
                     .font(Font.system(size: 17))
                     .foregroundStyle(.lightBlue00A7FF)
-
+                    
                 }
                 .padding(16)
                 .frame(height: screenHeight)
             }
-        
-                
+            
+            
         } .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
-    
-    
+            
+            
             if (UIDevice.current.orientation != UIDeviceOrientation.portraitUpsideDown){
                 orientation = UIDevice.current.orientation
             }
-    
+            
         }
         .onChange(of: horizontalSizeClass) {
             updateScreenSize()
@@ -173,6 +173,7 @@ struct RegisterView: View{
     private func updateScreenSize() {
         screenHeight = UIScreen.main.bounds.height
         screenWidth = UIScreen.main.bounds.width
-    }}
+    }
+}
 
 
