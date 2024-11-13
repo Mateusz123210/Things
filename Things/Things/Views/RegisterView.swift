@@ -43,24 +43,25 @@ struct RegisterView: View{
                         Text("Register")
                             .fontWeight(.semibold)
                             .font(Font.system(size: 40))
-                            .padding(.bottom, 0.02 * screenHeight)
+                            .padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.01 * screenHeight)))
                         Text("Email")
                             .fontWeight(.light)
                             .font(Font.system(size: 28))
                             .foregroundStyle(.lightBlack202C37)
-                            .padding(.bottom, 0.02 * screenHeight)
+                            .padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.005 * screenHeight)))
                             .frame(maxWidth: .infinity, alignment: .leading)
                         VStack{
                             TextField("", text: $email)
                                 .background(.white)
                                 .font(Font.system(size: 24))
                                 .border(Color.gray, width: 1)
-                        }.padding(.bottom, 0.02 * screenHeight)
+                                .padding(.trailing, 50)
+                        }.padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.005 * screenHeight)))
                         Text("Password")
                             .fontWeight(.light)
                             .font(Font.system(size: 28))
                             .foregroundStyle(.lightBlack202C37)
-                            .padding(.bottom, 0.02 * screenHeight)
+                            .padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.005 * screenHeight)))
                             .frame(maxWidth: .infinity, alignment: .leading)
                         VStack{
                             SecureField("", text: $password)
@@ -68,7 +69,8 @@ struct RegisterView: View{
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .font(Font.system(size: 24))
                                 .border(Color.gray, width: 1)
-                        }.padding(.bottom, 0.02 * screenHeight)
+                                .padding(.trailing, 50)
+                        }.padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.005 * screenHeight)))
                         Button("Register"){
                             registerUser()
 
@@ -78,7 +80,7 @@ struct RegisterView: View{
                             .buttonStyle(.bordered)
                             .background(.lightBlueD6F1FF)
                             .cornerRadius(15)
-                            .padding(.bottom, 0.01 * screenHeight)
+                            .padding(.bottom,(screenHeight > 500 ? (0.01 * screenHeight) : (0.005 * screenHeight)))
                         
                         Button("Already have an account? Login"){
                             router.navigate(destination: .login)
@@ -91,29 +93,29 @@ struct RegisterView: View{
                 }.frame(height: screenHeight)
             }else{
                 VStack{
-                    LogoImageView(padding: 0.08 * screenHeight)
+                    LogoImageView(padding: (screenHeight > 800 ? (0.08 * screenHeight) : (0.01 * screenHeight)), width: 60)
 
                     Text("Register")
                         .fontWeight(.semibold)
                         .font(Font.system(size: 40))
-                        .padding(.bottom, 0.02 * screenHeight)
+                        .padding(.bottom,(screenHeight > 800 ? (0.02 * screenHeight) : (0.005 * screenHeight)))
                     Text("Email")
                         .fontWeight(.light)
                         .font(Font.system(size: 28))
                         .foregroundStyle(.lightBlack202C37)
-                        .padding(.bottom, 0.02 * screenHeight)
+                        .padding(.bottom,(screenHeight > 800 ? (0.02 * screenHeight) : (0.01 * screenHeight)))
                         .frame(maxWidth: .infinity, alignment: .leading)
                     VStack{
                         TextField("", text: $email)
                             .background(.white)
                             .font(Font.system(size: 24))
                             .border(Color.gray, width: 1)
-                    }.padding(.bottom, 0.02 * screenHeight)
+                    }.padding(.bottom,(screenHeight > 800 ? (0.02 * screenHeight) : (0.01 * screenHeight)))
                     Text("Password")
                         .fontWeight(.light)
                         .font(Font.system(size: 28))
                         .foregroundStyle(.lightBlack202C37)
-                        .padding(.bottom, 0.02 * screenHeight)
+                        .padding(.bottom,(screenHeight > 800 ? (0.02 * screenHeight) : (0.01 * screenHeight)))
                         .frame(maxWidth: .infinity, alignment: .leading)
                     VStack{
                         SecureField("", text: $password)
@@ -121,7 +123,7 @@ struct RegisterView: View{
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .font(Font.system(size: 24))
                             .border(Color.gray, width: 1)
-                    }.padding(.bottom, 0.02 * screenHeight)
+                    }.padding(.bottom,(screenHeight > 800 ? (0.02 * screenHeight) : (0.01 * screenHeight)))
                     
                     .alert(isPresented: $showAlert){
                         Alert(title: Text("Error"), message: Text(alertMessage))
@@ -136,8 +138,8 @@ struct RegisterView: View{
                         .buttonStyle(.bordered)
                         .background(.lightBlueD6F1FF)
                         .cornerRadius(15)
-                        .padding(.bottom, 0.01 * screenHeight)
-                    
+                        .padding(.bottom,(screenHeight > 800 ? (0.01 * screenHeight) : (0.005 * screenHeight)))
+    
                     Button("Already have an account? Login"){
                         router.navigate(destination: .login)
                     }

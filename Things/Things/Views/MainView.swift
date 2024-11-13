@@ -68,15 +68,14 @@ struct MainView: View{
             }else{
                 VStack{
                     
-                    LogoImageView(opacity: logoOpacity, padding: 0.1 * screenHeight)
+                    LogoImageView(opacity: logoOpacity, padding: (screenHeight > 800 ? (0.15 * screenHeight) : (0.05 * screenHeight)))
                     
                     Text("Things")
                         .bold()
                         .font(Font.system(size: 72))
                         .scaleEffect(textScale)
                         .foregroundStyle(animateColor(progress: colorProgress))
-                        .padding(.bottom, 0.2 * screenHeight)
-                    
+                        .padding(.bottom,(screenHeight > 800 ? (0.15 * screenHeight) : (0.05 * screenHeight)))
                     
                     Text("Manage your things easier")
                         .font(Font.system(size: 20))
