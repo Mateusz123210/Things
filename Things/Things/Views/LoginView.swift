@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct LoginView: View{
-    
+    @ObservedObject var loginStatus: LoginStatus
     @EnvironmentObject var router: Router
     @State private var screenHeight = UIScreen.main.bounds.height
     @State private var screenWidth = UIScreen.main.bounds.width
@@ -12,6 +12,7 @@ struct LoginView: View{
     @State private var password: String = "myPass123#"
     @State private var showAlert = false
     @State private var alertMessage = ""
+    private let validator = Validator()
     
     let loginService = LoginService()
     
@@ -20,13 +21,35 @@ struct LoginView: View{
         showAlert = true
     }
     
-    func logged(){
-        //print("Registered")
-        //showAlert(message: "registered")
-        router.navigate(destination: .login)
+    func logged(tokens: TokensSchema){
+ 
+        if(tokens.access_token.count != 151 || tokens.refresh_token.count != 151){
+            showAlert(message: "Internal problem occurred")
+            return
+        }
+        
+        loginStatus.logged = true
+        loginStatus.accessToken = tokens.access_token
+        loginStatus.refreshToken = tokens.refresh_token
+        
+        email = ""
+        password = ""
+        
+        router.navPath.removeLast()
+        router.navigate(destination: .categories)
     }
     
     func login(){
+        if(validator.validateEmail(email: email) == false){
+            showAlert(message: "Invalid email")
+            return
+        }
+        
+        if(validator.validatePassword(password: password) == false) {
+            showAlert(message: "Password should contains of minimum 8 characters, including big letter, small letter, digit and special character")
+            return
+        }
+        
         let schema = RegisterSchema(email: email, password: password)
         loginService.loginUser(data: schema, viewRef: self)
         
@@ -141,6 +164,7 @@ struct LoginView: View{
                         .padding(.bottom,(screenHeight > 800 ? (0.01 * screenHeight) : (0.005 * screenHeight)))
     
                     Button("Don't have an account? Register"){
+                        router.navPath.removeLast()
                         router.navigate(destination: .register)
                     }
                     .fontWeight(.bold)

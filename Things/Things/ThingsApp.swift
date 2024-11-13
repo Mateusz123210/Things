@@ -3,7 +3,8 @@ import SwiftUI
 @main
 struct ThingsApp: App {
     @ObservedObject var router = Router()
-    
+    @StateObject var loginStatus: LoginStatus = LoginStatus()
+        
     var body: some Scene {
         WindowGroup {
             NavigationStack(path: $router.navPath) {
@@ -16,7 +17,7 @@ struct ThingsApp: App {
                             RegisterView()
                         
                         case .login:
-                            LoginView()
+                            LoginView(loginStatus: loginStatus)
                         
                         case .refreshPassword:
                             RefreshPasswordView()
