@@ -6,7 +6,7 @@ final class Router: ObservableObject {
     public enum Destination: Codable, Hashable {
         case register
         case login
-        case refreshPassword
+        case refreshPass
         case categories
         case categoryProducts(categoryName: String)
         case product(productName: String)

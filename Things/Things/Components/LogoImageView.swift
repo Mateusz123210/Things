@@ -4,7 +4,7 @@ struct LogoImageView: View{
     
     var opacity: Double?
     var padding: CGFloat?
-    var width: CGFloat?
+    var paddingTop: CGFloat?
     
     var body: some View{
             
@@ -13,8 +13,7 @@ struct LogoImageView: View{
                 .clipShape(Circle())
                 .opacity(opacity ?? 1.0)
                 .padding(.bottom, padding ?? 0.0)
-                .padding(.top, 10.0)
-                .frame(width: width ?? 75)
+                .padding(.top, paddingTop ?? 10.0)
                 
         }
     }

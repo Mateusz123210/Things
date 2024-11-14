@@ -19,7 +19,7 @@ struct ThingsApp: App {
                         case .login:
                             LoginView(loginStatus: loginStatus)
                         
-                        case .refreshPassword:
+                        case .refreshPass:
                             RefreshPasswordView()
                             
                         case .categories:

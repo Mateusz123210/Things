@@ -61,17 +61,17 @@ struct LoginView: View{
                 HStack {
                     VStack{
                         LogoImageView()
-                    }.frame(width: screenWidth / 2)
+                    }.frame(width: 0.4 * screenWidth)
                     VStack{
                         Text("Sign in")
                             .fontWeight(.semibold)
-                            .font(Font.system(size: 40))
-                            .padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.01 * screenHeight)))
+                            .font(Font.system(size: screenHeight > 500 ? 40 : 32))
+                            .padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.001 * screenHeight)))
                         Text("Email")
                             .fontWeight(.light)
                             .font(Font.system(size: 28))
                             .foregroundStyle(.lightBlack202C37)
-                            .padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.005 * screenHeight)))
+                            .padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.001 * screenHeight)))
                             .frame(maxWidth: .infinity, alignment: .leading)
                         VStack{
                             TextField("", text: $email)
@@ -79,12 +79,12 @@ struct LoginView: View{
                                 .font(Font.system(size: 24))
                                 .border(Color.gray, width: 1)
                                 .padding(.trailing, 50)
-                        }.padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.005 * screenHeight)))
+                        }.padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.001 * screenHeight)))
                         Text("Password")
                             .fontWeight(.light)
                             .font(Font.system(size: 28))
                             .foregroundStyle(.lightBlack202C37)
-                            .padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.005 * screenHeight)))
+                            .padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.001 * screenHeight)))
                             .frame(maxWidth: .infinity, alignment: .leading)
                         VStack{
                             SecureField("", text: $password)
@@ -93,7 +93,18 @@ struct LoginView: View{
                                 .font(Font.system(size: 24))
                                 .border(Color.gray, width: 1)
                                 .padding(.trailing, 50)
-                        }.padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.005 * screenHeight)))
+                        }.padding(.bottom, screenHeight > 500 ? (0.01 * screenHeight) : 0.0)
+                        HStack{
+                            Button("Refresh password"){
+                                router.navPath.removeLast()
+                                router.navigate(destination: .refreshPass)
+                                
+                            }   .fontWeight(.bold)
+                                .font(Font.system(size: 17))
+                                .foregroundStyle(.darkGray787678)
+                            Spacer()
+                        }
+                        
                         Button("Sign in"){
                             login()
 
@@ -103,42 +114,47 @@ struct LoginView: View{
                             .buttonStyle(.bordered)
                             .background(.lightBlueD6F1FF)
                             .cornerRadius(15)
-                            .padding(.bottom,(screenHeight > 500 ? (0.01 * screenHeight) : (0.005 * screenHeight)))
+                            .padding(.bottom,(screenHeight > 500 ? (0.01 * screenHeight) : (0.001 * screenHeight)))
                         
                         Button("Don't have an account? Register"){
+                            router.navPath.removeLast()
                             router.navigate(destination: .register)
                         }
                         .fontWeight(.bold)
                         .font(Font.system(size: 17))
                         .foregroundStyle(.lightBlue00A7FF)                    }
                     .padding(16)
-                    .frame(width: screenWidth / 2)
+                    .frame(width: 0.6 * screenWidth )
+                    
+                    .alert(isPresented: $showAlert){
+                        Alert(title: Text("Error"), message: Text(alertMessage))
+                    }
                 }.frame(height: screenHeight)
             }else{
                 VStack{
-                    LogoImageView(padding: (screenHeight > 800 ? (0.08 * screenHeight) : (0.01 * screenHeight)), width: 60)
-
+                    LogoImageView(padding: (screenHeight > 800 ? (0.07 * screenHeight) : (0.002 * screenHeight)), paddingTop: screenHeight > 800 ? 10.0 : 0.0)
+                    
                     Text("Sign in")
                         .fontWeight(.semibold)
                         .font(Font.system(size: 40))
-                        .padding(.bottom,(screenHeight > 800 ? (0.02 * screenHeight) : (0.005 * screenHeight)))
+                        .padding(.bottom,(screenHeight > 800 ? (0.02 * screenHeight) : (0.003 * screenHeight)))
                     Text("Email")
                         .fontWeight(.light)
                         .font(Font.system(size: 28))
                         .foregroundStyle(.lightBlack202C37)
-                        .padding(.bottom,(screenHeight > 800 ? (0.02 * screenHeight) : (0.01 * screenHeight)))
+                        .padding(.bottom,(screenHeight > 800 ? (0.02 * screenHeight) : (0.003 * screenHeight)))
                         .frame(maxWidth: .infinity, alignment: .leading)
                     VStack{
                         TextField("", text: $email)
                             .background(.white)
                             .font(Font.system(size: 24))
                             .border(Color.gray, width: 1)
-                    }.padding(.bottom,(screenHeight > 800 ? (0.02 * screenHeight) : (0.01 * screenHeight)))
+                    }.padding(.bottom,(screenHeight > 800 ? (0.02 * screenHeight) : (0.003 * screenHeight)))
                     Text("Password")
                         .fontWeight(.light)
                         .font(Font.system(size: 28))
                         .foregroundStyle(.lightBlack202C37)
-                        .padding(.bottom,(screenHeight > 800 ? (0.02 * screenHeight) : (0.01 * screenHeight)))
+                        .padding(.bottom,(screenHeight > 800 ? (0.02 * screenHeight) : (0.003 * screenHeight)))
                         .frame(maxWidth: .infinity, alignment: .leading)
                     VStack{
                         SecureField("", text: $password)
@@ -146,15 +162,22 @@ struct LoginView: View{
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .font(Font.system(size: 24))
                             .border(Color.gray, width: 1)
-                    }.padding(.bottom,(screenHeight > 800 ? (0.02 * screenHeight) : (0.01 * screenHeight)))
+                    }.padding(.bottom,(screenHeight > 800 ? (0.02 * screenHeight) : (0.003 * screenHeight)))
                     
-                    .alert(isPresented: $showAlert){
-                        Alert(title: Text("Error"), message: Text(alertMessage))
+                    HStack{
+                        Button("Refresh password"){
+                            router.navPath.removeLast()
+                            router.navigate(destination: .refreshPass)
+                            
+                        }   .fontWeight(.bold)
+                            .font(Font.system(size: 17))
+                            .foregroundStyle(.darkGray787678)
+                        Spacer()
                     }
-
+                    
                     Button("Sign in"){
                         login()
-
+                        
                     }   .fontWeight(.bold)
                         .font(Font.system(size: 32))
                         .foregroundStyle(.black)
@@ -162,7 +185,7 @@ struct LoginView: View{
                         .background(.lightBlueD6F1FF)
                         .cornerRadius(15)
                         .padding(.bottom,(screenHeight > 800 ? (0.01 * screenHeight) : (0.005 * screenHeight)))
-    
+                    
                     Button("Don't have an account? Register"){
                         router.navPath.removeLast()
                         router.navigate(destination: .register)
@@ -170,13 +193,16 @@ struct LoginView: View{
                     .fontWeight(.bold)
                     .font(Font.system(size: 17))
                     .foregroundStyle(.lightBlue00A7FF)
-
+                    
                 }
                 .padding(16)
                 .frame(height: screenHeight)
-            }
-        
                 
+                .alert(isPresented: $showAlert){
+                    Alert(title: Text("Error"), message: Text(alertMessage))
+                }
+            }
+            
         } .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
     
     
