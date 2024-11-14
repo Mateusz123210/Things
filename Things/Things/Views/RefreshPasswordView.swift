@@ -3,6 +3,7 @@ import SwiftUI
 struct RefreshPasswordView: View{
     
     @EnvironmentObject var router: Router
+    @Environment(\.colorScheme) var colorScheme
     @State private var screenHeight = UIScreen.main.bounds.height
     @State private var screenWidth = UIScreen.main.bounds.width
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
@@ -57,7 +58,8 @@ struct RefreshPasswordView: View{
                             .frame(maxWidth: .infinity, alignment: .leading)
                         VStack{
                             TextField("", text: $email)
-                                .background(.white)
+                                .background(colorScheme == .dark ? .black : .white)
+                                .foregroundStyle(colorScheme == .dark ? .white : .black)
                                 .font(Font.system(size: 24))
                                 .border(Color.gray, width: 1)
                                 .padding(.trailing, 50)
@@ -106,7 +108,8 @@ struct RefreshPasswordView: View{
                         .frame(maxWidth: .infinity, alignment: .leading)
                     VStack{
                         TextField("", text: $email)
-                            .background(.white)
+                            .background(colorScheme == .dark ? .black : .white)
+                            .foregroundStyle(colorScheme == .dark ? .white : .black)
                             .font(Font.system(size: 24))
                             .border(Color.gray, width: 1)
                     }.padding(.bottom,(screenHeight > 800 ? (0.02 * screenHeight) : (0.01 * screenHeight)))

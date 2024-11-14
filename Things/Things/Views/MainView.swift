@@ -3,6 +3,7 @@ import SwiftUI
 struct MainView: View{
     
     @EnvironmentObject var router: Router
+    @Environment(\.colorScheme) var colorScheme
     @State private var screenHeight = UIScreen.main.bounds.height
     @State private var screenWidth = UIScreen.main.bounds.width
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
@@ -178,8 +179,14 @@ struct MainView: View{
     }
     
     func animateColor(progress: Double) -> Color{
-        let blue: Double = 1.0 - colorProgress * colorProgress * colorProgress
-        return Color(red: 0.0, green: 0.0, blue: blue)
+        if (colorScheme != .dark){
+            let blue: Double = 1.0 - colorProgress * colorProgress * colorProgress
+            return Color(red: 0.0, green: 0.0, blue: blue)
+        }
+        else{
+            let redAndGreen: Double = 0.0 + colorProgress * colorProgress * colorProgress
+            return Color(red: redAndGreen, green: redAndGreen, blue: 1.0)
+        }
     }
 
 }
