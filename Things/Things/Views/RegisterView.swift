@@ -65,30 +65,36 @@ struct RegisterView: View{
                             .padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.005 * screenHeight)))
                             .frame(maxWidth: .infinity, alignment: .leading)
                         VStack{
-                            TextField("", text: $email)
-                                .background(colorScheme == .dark ? .black : .white)
-                                .foregroundStyle(colorScheme == .dark ? .white : .black)
-                                .font(Font.system(size: 24))
-                                .border(Color.gray, width: 1)
-                                .padding(.trailing, 50)
-                        }.padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.005 * screenHeight)))
-                        Text("Password")
+                            HStack{
+                                TextField("", text: $email)
+                                    .background(colorScheme == .dark ? .black : .white)
+                                    .foregroundStyle(colorScheme == .dark ? .white : .black)
+                                    .font(Font.system(size: 24))
+                                    .border(Color.gray, width: 1)
+                                    //.padding(.trailing, 50)
+                                    .padding(.bottom,(screenHeight > 500 ? (0.02 *          screenHeight) : (0.005 * screenHeight)))
+                                    .frame(maxWidth: 0.5 * screenWidth)
+                                Spacer()
+                            }.frame(maxWidth: .infinity, alignment: .leading)
+                            Text("Password")
                             .fontWeight(.light)
                             .font(Font.system(size: 28))
                             .foregroundStyle(.lightBlack202C37)
                             .padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.005 * screenHeight)))
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        VStack{
+                        
                             HStack{
                                 SecureField("", text: $password)
                                     .background(.white)
                                     .textFieldStyle(RoundedBorderTextFieldStyle())
                                     .font(Font.system(size: 24))
                                     .border(Color.gray, width: 1)
+                                    .frame(maxWidth: 0.5 * screenWidth)
+                             Spacer()
+                            }.frame(maxWidth: .infinity, alignment: .leading)
                                 
-                            }
-                            
                         }   .padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.005 * screenHeight)))
+                            
                         
                         Button("Register"){
                             registerUser()

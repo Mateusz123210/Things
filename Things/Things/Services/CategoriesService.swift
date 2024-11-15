@@ -41,8 +41,6 @@ struct CategoriesService{
                 
                 guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
                     
-                    
-  
                     do{
                         let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
                         if (statusCode == 401){
@@ -65,7 +63,6 @@ struct CategoriesService{
                                                 loginStatus.refreshToken = refreshToken
                                             }
                                             return getAllCategories(loginStatus: loginStatus, viewRef: viewRef, enableRefreshToken: false, tokensCopy: TokensSchema(access_token: accessToken, refresh_token: refreshToken))
-                                            
                                             
                                         }else{
                                             if(fetchedTokens.message != nil){

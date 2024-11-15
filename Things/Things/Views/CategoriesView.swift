@@ -12,6 +12,7 @@ struct CategoriesView: View{
     @State private var orientation: UIDeviceOrientation = UIDevice.current.orientation
     @State private var showAlert = false
     @State private var alertMessage = ""
+    @State private var categoriesFound: Bool = false
     private let validator = Validator()
     
     let categoriesService = CategoriesService()
@@ -44,7 +45,10 @@ struct CategoriesView: View{
         DispatchQueue.global().async{
             categoriesService.getAllCategories(loginStatus: loginStatus, viewRef: self)
         }
-        
+    }
+    
+    func addCategory(){
+        return
     }
     
     
@@ -56,24 +60,77 @@ struct CategoriesView: View{
                     
                     
                     
-                    .alert(isPresented: $showAlert){
-                        Alert(title: Text("Error"), message: Text(alertMessage))
-                    }
+                    
                 }.frame(height: screenHeight)
             }else{
                 VStack{
-                    Text("A")
-                    Button("Action"){
-                        fetchCategories()
+                    VStack{
+                        Button("Things"){
+                            
+                        }
+                        .fontWeight(.bold)
+                        .font(Font.system(size: 40))
+                        .foregroundStyle(.darkBlue341943)
                     }
-                    Button("getAccessToken"){
-                        print(loginStatus.accessToken)
-                    }                    .buttonStyle(.bordered)
+                    .frame(width: screenWidth)
+                    .background(.blue5AC8FA)
+                    VStack{
+                        HStack{
+                            Text("Categories")
+                                .fontWeight(.medium)
+                                .font(Font.system(size: 32))
+                                .foregroundStyle(colorScheme == .dark ? .white:
+                                        .black)
+                            Spacer()
+                            Button("Refresh"){
+                                fetchCategories()
+                            }
+                            .fontWeight(.semibold)
+                            .font(Font.system(size: 17))
+                            .foregroundStyle(.lightGray3C3C43)
+                            Button("Add"){
+                                addCategory()
+                            }
+                            .fontWeight(.semibold)
+                            .font(Font.system(size: 17))
+                            .foregroundStyle(.lightGray3C3C43)
+                        }
+                        .padding(.leading, 16)
+                        .padding(.trailing, 16)
+                        .padding(.top, 2)
+                    }
+                    .padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.005 * screenHeight)))
                     
-                    .alert(isPresented: $showAlert){
-                        Alert(title: Text("Error"), message: Text(alertMessage))
+                    
+                    
+                    if(categoriesFound == true) {
+                        
                     }
+                    else{
+                        VStack{
+                            Text("You don't have any categories yet!")
+                                .fontWeight(.medium)
+                                .font(Font.system(size: 28))
+                                .foregroundStyle(colorScheme == .dark ? .white:
+                                        .black)
+                                .multilineTextAlignment(.center)
+                                .padding()
+        
+
+                            
+                        }
+                    
+                    }
+                    
+
+
+                    
+                    
+
+
+
                 }
+                
             }
             
             
@@ -91,6 +148,9 @@ struct CategoriesView: View{
         }
         .onChange(of: verticalSizeClass) {
             updateScreenSize()
+        }
+        .alert(isPresented: $showAlert){
+            Alert(title: Text("Error"), message: Text(alertMessage))
         }
         
     }
