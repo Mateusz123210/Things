@@ -65,43 +65,47 @@ struct CategoriesView: View{
             }else{
                 VStack{
                     VStack{
-                        Button("Things"){
-                            
+                        VStack{
+                            Text("Things")
+                                .fontWeight(.bold)
+                                .font(Font.system(size: 40))
+                                .foregroundStyle(.darkBlue341943)
                         }
-                        .fontWeight(.bold)
-                        .font(Font.system(size: 40))
-                        .foregroundStyle(.darkBlue341943)
-                    }
-                    .frame(width: screenWidth)
-                    .background(.blue5AC8FA)
-                    VStack{
-                        HStack{
-                            Text("Categories")
-                                .fontWeight(.medium)
-                                .font(Font.system(size: 32))
-                                .foregroundStyle(colorScheme == .dark ? .white:
-                                        .black)
-                            Spacer()
-                            Button("Refresh"){
-                                fetchCategories()
+                        .frame(width: screenWidth)
+                        .background(colorScheme == .dark ? .black : .blue5AC8FA)
+                        
+                        VStack{
+                            HStack{
+                                Text("Categories")
+                                    .fontWeight(.medium)
+                                    .font(Font.system(size: 32))
+                                    .foregroundStyle(colorScheme == .dark ? .white:
+                                            .black)
+                                Spacer()
+                                Button("Refresh"){
+                                    fetchCategories()
+                                }
+                                .fontWeight(.semibold)
+                                .font(Font.system(size: 17))
+                                .foregroundStyle(.lightGray3C3C43)
+                                Button("Add"){
+                                    addCategory()
+                                }
+                                .fontWeight(.semibold)
+                                .font(Font.system(size: 17))
+                                .foregroundStyle(.lightGray3C3C43)
                             }
-                            .fontWeight(.semibold)
-                            .font(Font.system(size: 17))
-                            .foregroundStyle(.lightGray3C3C43)
-                            Button("Add"){
-                                addCategory()
-                            }
-                            .fontWeight(.semibold)
-                            .font(Font.system(size: 17))
-                            .foregroundStyle(.lightGray3C3C43)
+                            .padding(.leading, 16)
+                            .padding(.trailing, 16)
+                            .padding(.top, 2)
                         }
-                        .padding(.leading, 16)
-                        .padding(.trailing, 16)
-                        .padding(.top, 2)
+                        .padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.005 * screenHeight)))
+                        
+                        
                     }
-                    .padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.005 * screenHeight)))
+                    .frame(alignment: .topLeading)
                     
-                    
+                    Spacer()
                     
                     if(categoriesFound == true) {
                         
@@ -119,10 +123,24 @@ struct CategoriesView: View{
 
                             
                         }
-                    
+                        .frame(alignment: .center)
+                        Spacer()
                     }
                     
-
+                    
+//                    VStack{
+//                        HStack{
+//                            Button(){
+//                                
+//                            }
+//                            
+//                            
+//                            
+//                        }
+//                        .background(.green)
+//                        
+//                    }
+//                    .frame(alignment: .bottomTrailing)
 
                     
                     
