@@ -79,13 +79,17 @@ struct RegisterView: View{
                             .padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.005 * screenHeight)))
                             .frame(maxWidth: .infinity, alignment: .leading)
                         VStack{
-                            SecureField("", text: $password)
-                                .background(.white)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .font(Font.system(size: 24))
-                                .border(Color.gray, width: 1)
-                                .padding(.trailing, 50)
-                        }.padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.005 * screenHeight)))
+                            HStack{
+                                SecureField("", text: $password)
+                                    .background(.white)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                                    .font(Font.system(size: 24))
+                                    .border(Color.gray, width: 1)
+                                
+                            }
+                            
+                        }   .padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.005 * screenHeight)))
+                        
                         Button("Register"){
                             registerUser()
                             
@@ -103,7 +107,8 @@ struct RegisterView: View{
                         }
                         .fontWeight(.bold)
                         .font(Font.system(size: 17))
-                        .foregroundStyle(.lightBlue00A7FF)                    }
+                        .foregroundStyle(.lightBlue00A7FF)
+                    }
                     .padding(16)
                     .frame(width: 0.6 * screenWidth)
                     
@@ -144,6 +149,7 @@ struct RegisterView: View{
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .font(Font.system(size: 24))
                             .border(Color.gray, width: 1)
+
                     }.padding(.bottom,(screenHeight > 800 ? (0.02 * screenHeight) : (0.003 * screenHeight)))
                     
                     Button("Register"){

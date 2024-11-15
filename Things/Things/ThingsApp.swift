@@ -23,19 +23,19 @@ struct ThingsApp: App {
                             RefreshPasswordView()
                             
                         case .categories:
-                            CategoriesView()
+                            CategoriesView( loginStatus: loginStatus)
                             
                         case .categoryProducts(let categoryName):
-                            CategoryView(categoryName: categoryName)
+                            CategoryView(loginStatus: loginStatus, categoryName: categoryName)
                             
                         case .product(let productName):
-                            ProductView(productName: productName)
+                            ProductView(loginStatus: loginStatus, productName: productName)
                             
                         case .notes:
-                            NotesView()
+                            NotesView( loginStatus: loginStatus)
                             
                         case .note(let noteName):
-                            NoteView(noteName: noteName)
+                            NoteView(loginStatus: loginStatus, noteName: noteName)
                             
                         }
                         

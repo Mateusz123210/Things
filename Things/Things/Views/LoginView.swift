@@ -32,6 +32,7 @@ struct LoginView: View{
         loginStatus.logged = true
         loginStatus.accessToken = tokens.access_token
         loginStatus.refreshToken = tokens.refresh_token
+        loginStatus.email = email
         
         email = ""
         password = ""
