@@ -64,7 +64,7 @@ struct CategoriesService{
                                                 loginStatus.accessToken = accessToken
                                                 loginStatus.refreshToken = refreshToken
                                             }
-                                            return getAllCategories(loginStatus: loginStatus, viewRef: viewRef, enableRefreshToken: false)
+                                            return getAllCategories(loginStatus: loginStatus, viewRef: viewRef, enableRefreshToken: false, tokensCopy: TokensSchema(access_token: accessToken, refresh_token: refreshToken))
                                             
                                             
                                         }else{
