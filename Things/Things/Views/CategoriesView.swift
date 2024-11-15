@@ -21,15 +21,29 @@ struct CategoriesView: View{
         showAlert = true
     }
     
-    func categoriesFetched(){
-
+    func categoriesFetched(categories: [CategorySchema]){
+        print("categories fetched")
+        print(categories)
         //router.navigate(destination: .login)
     }
     
+    func handleFetchError(message: String){
+        print("handle fetch error" + message)
+    }
+    
+    func handleCredentialsError(){
+        print("handle credentials error")
+    }
+    
+    func handleNoCategories(){
+        print("No categories")
+    }
+    
+    
     func fetchCategories(){
-        
-        //let schema = AccessTokenSchema(email: email, password: password)
-        //registerService.registerUser(data: schema, viewRef: self)
+        DispatchQueue.global().async{
+            categoriesService.getAllCategories(loginStatus: loginStatus, viewRef: self)
+        }
         
     }
     
@@ -50,9 +64,11 @@ struct CategoriesView: View{
                 VStack{
                     Text("A")
                     Button("Action"){
-                        
+                        fetchCategories()
                     }
-                    .buttonStyle(.bordered)
+                    Button("getAccessToken"){
+                        print(loginStatus.accessToken)
+                    }                    .buttonStyle(.bordered)
                     
                     .alert(isPresented: $showAlert){
                         Alert(title: Text("Error"), message: Text(alertMessage))
