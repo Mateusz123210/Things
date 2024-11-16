@@ -70,6 +70,7 @@ struct CategoriesView: View{
                                 .fontWeight(.bold)
                                 .font(Font.system(size: 40))
                                 .foregroundStyle(.darkBlue341943)
+                                .padding(.bottom, 5)
                         }
                         .frame(width: screenWidth)
                         .background(colorScheme == .dark ? .black : .blue5AC8FA)
@@ -128,19 +129,44 @@ struct CategoriesView: View{
                     }
                     
                     
-//                    VStack{
-//                        HStack{
-//                            Button(){
-//                                
-//                            }
-//                            
-//                            
-//                            
-//                        }
-//                        .background(.green)
-//                        
-//                    }
-//                    .frame(alignment: .bottomTrailing)
+                    VStack{
+                        HStack{
+                            Button(action: {
+//                                router.navigate(destination: .notes)
+                            }){
+                                Image(systemName: "house")
+                                
+                                
+                            }
+                            .frame(width: screenWidth / 3)
+                            Button(action: {
+                                router.navigate(destination: .notes)
+                            }){
+                                Image(systemName: "list.bullet.clipboard")
+                                    .scaledToFit()
+//                                    .resizable()
+                                    .frame(maxHeight: 40)
+                                
+                                
+                            }
+                            .frame(width: screenWidth / 3)
+                            Button(action: {
+//                                router.navigate(destination: .notes)
+                            }){
+                                Image(systemName: "person.crop.circle")
+                                
+                                
+                            }
+                            .frame(width: screenWidth / 3)
+                            
+                            
+                            
+                        }
+                        .frame(width: screenWidth)
+                        .background(colorScheme == .dark ? .black : .blue5AC8FA)
+                        
+                    }
+                    .frame(alignment: .bottomTrailing)
 
                     
                     

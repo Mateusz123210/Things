@@ -14,6 +14,7 @@ struct CategoryView: View{
     @State private var alertMessage = ""
     @State private var categoriesFound: Bool = false
     private let validator = Validator()
+    var categoryName: String
     
     let categoriesService = CategoriesService()
     
