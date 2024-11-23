@@ -13,6 +13,8 @@ struct CategoriesView: View{
     @State private var showAlert = false
     @State private var alertMessage = ""
     @State private var categoriesFound: Bool = false
+    @State private var userCategories: [CategorySchema] = []
+    @State private var fetched: Bool = false
     private let validator = Validator()
     
     let categoriesService = CategoriesService()
@@ -23,9 +25,12 @@ struct CategoriesView: View{
     }
     
     func categoriesFetched(categories: [CategorySchema]){
-        print("categories fetched")
-        print(categories)
-        //router.navigate(destination: .login)
+        print("C")
+        userCategories = categories
+        categoriesFound = true
+        if (fetched == false) {
+            fetched = true
+        }
     }
     
     func handleFetchError(message: String){
@@ -37,7 +42,11 @@ struct CategoriesView: View{
     }
     
     func handleNoCategories(){
-        print("No categories")
+        if (fetched == false) {
+            fetched = true
+        }
+        categoriesFound = false
+        userCategories = []
     }
     
     
@@ -51,6 +60,9 @@ struct CategoriesView: View{
         return
     }
     
+    let columns = [
+        GridItem(.adaptive(minimum: 90, maximum: 160), spacing: 10)
+    ]
     
     var body: some View{
         Group {
@@ -107,27 +119,43 @@ struct CategoriesView: View{
                     .frame(alignment: .topLeading)
                     
                     Spacer()
-                    
-                    if(categoriesFound == true) {
-                        
-                    }
-                    else{
-                        VStack{
-                            Text("You don't have any categories yet!")
-                                .fontWeight(.medium)
-                                .font(Font.system(size: 28))
-                                .foregroundStyle(colorScheme == .dark ? .white:
-                                        .black)
-                                .multilineTextAlignment(.center)
-                                .padding()
-        
-
-                            
+                    if(fetched == true){
+                        if(categoriesFound == true) {
+                            ScrollView{
+                                LazyVGrid(columns: columns, spacing: 10){
+                                    ForEach(userCategories, id: \.self) {category in
+                                        Category(name: category.name, image: category.photo)
+//                                        Text("AS")
+//                                        Image(category.photo)
+                                        
+                                        
+                                        
+                                    }
+                                    
+                                    
+                                }
+                                
+                                
+                                
+                            }
                         }
-                        .frame(alignment: .center)
-                        Spacer()
+                        else{
+                            VStack{
+                                Text("You don't have any categories yet!")
+                                    .fontWeight(.medium)
+                                    .font(Font.system(size: 28))
+                                    .foregroundStyle(colorScheme == .dark ? .white:
+                                            .black)
+                                    .multilineTextAlignment(.center)
+                                    .padding()
+                                
+                                
+                                
+                            }
+                            .frame(alignment: .center)
+                            Spacer()
+                        }
                     }
-                    
                     
                     VStack{
                         HStack{
@@ -173,7 +201,10 @@ struct CategoriesView: View{
             }
             
             
-        }   .navigationBarBackButtonHidden(true)
+        }   .onAppear {
+                fetchCategories()
+            }
+            .navigationBarBackButtonHidden(true)
             .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
             
             

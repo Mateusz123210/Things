@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct CategorySchema: Codable {
+struct CategorySchema: Codable, Hashable {
     let name: String
     let photo: String
     
