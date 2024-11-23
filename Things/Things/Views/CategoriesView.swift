@@ -61,7 +61,7 @@ struct CategoriesView: View{
     }
     
     let columns = [
-        GridItem(.adaptive(minimum: 90, maximum: 160), spacing: 10)
+        GridItem(.adaptive(minimum: 152, maximum: 182), spacing: 10)
     ]
     
     var body: some View{
@@ -124,12 +124,12 @@ struct CategoriesView: View{
                             ScrollView{
                                 LazyVGrid(columns: columns, spacing: 10){
                                     ForEach(userCategories, id: \.self) {category in
-                                        Category(name: category.name, image: category.photo)
-//                                        Text("AS")
-//                                        Image(category.photo)
-                                        
-                                        
-                                        
+                                        Button(action: {
+                                            router.navigate(destination: .categoryProducts(categoryName: category.name))
+                                        }){
+                                            Category(name: category.name, image: category.photo)
+                                        }
+
                                     }
                                     
                                     

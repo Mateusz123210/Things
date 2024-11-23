@@ -64,7 +64,7 @@ struct CategoryView: View{
                 }.frame(height: screenHeight)
             }else{
                 VStack{
-                    Text("A")
+                    Text(categoryName)
                     Button("Action"){
                         fetchCategories()
                     }.buttonStyle(.bordered)
@@ -76,7 +76,7 @@ struct CategoryView: View{
             }
             
             
-        }   .navigationBarBackButtonHidden(true)
+        }   //.navigationBarBackButtonHidden(true)
             .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
             
             
