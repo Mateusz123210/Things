@@ -131,36 +131,31 @@ struct CategoriesView: View{
                     
                     VStack{
                         HStack{
-                            Button(action: {
-//                                router.navigate(destination: .notes)
-                            }){
-                                Image(systemName: "house")
-                                
-                                
-                            }
-                            .frame(width: screenWidth / 3)
+
+                            Image(systemName: "house")
+                                .font(.system(size: 32))
+                                .foregroundStyle(.iconF1F1F1)
+                                .padding()
+                                .frame(width: screenWidth / 3)
+                            
                             Button(action: {
                                 router.navigate(destination: .notes)
                             }){
                                 Image(systemName: "list.bullet.clipboard")
-                                    .scaledToFit()
-//                                    .resizable()
-                                    .frame(maxHeight: 40)
-                                
-                                
+                                    .font(.system(size: 32))
+                                    .foregroundStyle(.darkBlue341943)
                             }
+                            .padding()
                             .frame(width: screenWidth / 3)
                             Button(action: {
 //                                router.navigate(destination: .notes)
                             }){
                                 Image(systemName: "person.crop.circle")
-                                
-                                
+                                    .font(.system(size: 32))
+                                    .foregroundStyle(.darkBlue341943)
                             }
+                            .padding()
                             .frame(width: screenWidth / 3)
-                            
-                            
-                            
                         }
                         .frame(width: screenWidth)
                         .background(colorScheme == .dark ? .black : .blue5AC8FA)
