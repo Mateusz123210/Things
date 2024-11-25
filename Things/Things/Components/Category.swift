@@ -3,22 +3,35 @@ import SwiftUI
 struct Category: View {
     @Environment(\.colorScheme) var colorScheme
     var name: String
-    var image: String
+    var image: String?
     
     var body: some View {
         
         VStack{
             VStack{
-                if let imageConverted = ImageConverter.convertImage(base64String: image){
-                    imageConverted
+                if image != nil {
+                    if let imageConverted = ImageConverter.convertImage(base64String: image!){
+                        imageConverted
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 120, height: 150)
+                            .clipped()
+                        
+                    }else{
+                        Image("NoImage")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 120, height: 150)
+                            .clipped()
+                    }
+                }else{
+                    Image("NoImage")
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(width: 120, height: 150)
                         .clipped()
-                    
-                }else{
-                    Text("No Image")
                 }
+                
                 Text(name)
                     .fontWeight(.light)
                     .font(Font.system(size: 20))

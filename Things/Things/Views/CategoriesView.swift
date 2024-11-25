@@ -1,5 +1,12 @@
 import SwiftUI
 
+enum Modes {
+    case browse
+    case add
+    case edit
+    case delete
+}
+
 struct CategoriesView: View{
     
     @EnvironmentObject var router: Router
@@ -34,7 +41,7 @@ struct CategoriesView: View{
     }
     
     func handleFetchError(message: String){
-        print("handle fetch error" + message)
+        print("handle fetch error: " + message)
     }
     
     func handleCredentialsError(){
@@ -128,6 +135,9 @@ struct CategoriesView: View{
                                             router.navigate(destination: .categoryProducts(categoryName: category.name))
                                         }){
                                             Category(name: category.name, image: category.photo)
+                                        }
+                                        .onLongPressGesture(minimumDuration: 0.5) {
+                                            print("long")
                                         }
 
                                     }
