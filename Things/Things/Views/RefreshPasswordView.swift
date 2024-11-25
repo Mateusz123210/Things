@@ -9,7 +9,7 @@ struct RefreshPasswordView: View{
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
     @State private var orientation: UIDeviceOrientation = UIDevice.current.orientation
-    @State private var email: String = "252808@student.pwr.edu.pl"
+    @State private var email: String = ""
     @State private var showAlert = false
     @State private var alertMessage = ""
     private let validator = Validator()
