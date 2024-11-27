@@ -52,9 +52,6 @@ struct LoginService {
                         viewRef.showAlert(message: "Internal problem occured")
                     }
 
-                    
-
-                   
                 }
             }.resume()
             

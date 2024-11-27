@@ -10,11 +10,11 @@ struct AccountService{
         var parameters: [String: String] = [:]
         
         if(tokensCopy == nil){
-            parameters = ["access_token": loginStatus.accessToken!,
-                          "email": loginStatus.email!]
+            parameters = ["access_token": loginStatus.accessToken ?? "",
+                          "email": loginStatus.email ?? ""]
         }else{
             parameters = ["access_token": tokensCopy!.access_token,
-                          "email": loginStatus.email!]
+                          "email": loginStatus.email ?? ""]
         }
         
         let paramString = parameters.map { "\($0.key)=\($0.value)" }.joined(separator: "&")
@@ -114,11 +114,11 @@ struct AccountService{
         var parameters: [String: String] = [:]
         
         if(tokensCopy == nil){
-            parameters = ["access_token": loginStatus.accessToken!,
-                          "email": loginStatus.email!]
+            parameters = ["access_token": loginStatus.accessToken ?? "",
+                          "email": loginStatus.email ?? ""]
         }else{
             parameters = ["access_token": tokensCopy!.access_token,
-                          "email": loginStatus.email!]
+                          "email": loginStatus.email ?? ""]
         }
         
         let paramString = parameters.map { "\($0.key)=\($0.value)" }.joined(separator: "&")

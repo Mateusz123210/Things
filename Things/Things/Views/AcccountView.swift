@@ -12,9 +12,11 @@ struct AccountView: View{
     @State private var orientation: UIDeviceOrientation = UIDevice.current.orientation
     @State private var showAlert = false
     @State private var alertMessage = ""
+    @State private var alertMessage3 = ""
+    @State private var showAlert2 = false
+    @State private var showAlert3 = false
     @State private var showButton: Bool = false
 
-    
     let accountService = AccountService()
     
     func showAlert(message: String){
@@ -23,19 +25,22 @@ struct AccountView: View{
     }
     
     func handleLogout(){
-        print("Logged out")
+        loginStatus.handleLogout()
+        router.navigateToRoot()
     }
     
     func handleDeleteAccount(){
-        print("Account deleted")
+        handleLogout()
     }
     
     func handleError(message: String){
-        print("handle fetch error" + message)
+        showAlert(message: message)
     }
     
-    func handleCredentialsError(){
-        print("handle credentials error")
+    func handleCredentialsError() {
+        alertMessage3 = "Internal error occured. You will be logged out!"
+        showAlert3 = true
+        
     }
     
     func logout(){
@@ -46,10 +51,14 @@ struct AccountView: View{
     }
     
     func deleteAccount(){
-        DispatchQueue.global().async{
-           // accountService.deleteAccount(loginStatus: loginStatus, viewRef: self)
-        }
+        showAlert2 = true
         
+    }
+    func deleteAccountConfirmed() {
+        DispatchQueue.global().async{
+            
+           accountService.deleteAccount(loginStatus: loginStatus, viewRef: self)
+        }
     }
     
     func showOrHideDeleteButton(){
@@ -115,7 +124,7 @@ struct AccountView: View{
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                         .padding(.bottom, 8)
                                     
-                                    Text(loginStatus.email!)
+                                    Text(loginStatus.email ?? "")
                                         .fontWeight(.semibold)
                                         .font(Font.system(size: 28))
                                         .foregroundStyle(colorScheme == .dark ? .white : .black)
@@ -204,7 +213,7 @@ struct AccountView: View{
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.bottom, 16)
                         
-                        Text(loginStatus.email!)
+                        Text(loginStatus.email ?? "")
                             .fontWeight(.semibold)
                             .font(Font.system(size: screenWidth > 500 ? 28 : 24))
                             .foregroundStyle(colorScheme == .dark ? .white : .black)
@@ -254,6 +263,7 @@ struct AccountView: View{
                                 .background(.redF62D00)
                                 .cornerRadius(15)
                                 .padding(.bottom, 64)
+                            
                         }
                         
                     }
@@ -320,7 +330,27 @@ struct AccountView: View{
         .alert(isPresented: $showAlert){
             Alert(title: Text("Error"), message: Text(alertMessage))
         }
-        
+        .alert("Are you sure, you want to delete account?", isPresented: $showAlert2){
+            
+            Button("Yes"){
+                deleteAccountConfirmed()
+            }
+            Button("No"){
+                
+            }
+        }
+        message: {
+            Text("This can not be undone!")
+        }
+        .alert(isPresented: $showAlert3){
+            Alert(title: Text("Error"), message: Text(alertMessage3))
+        }
+        .onChange(of: showAlert3){
+            value in
+            if !value{
+                handleLogout()
+            }
+        }
     }
     
     private func updateScreenSize() {
