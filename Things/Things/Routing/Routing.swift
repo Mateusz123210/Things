@@ -12,6 +12,7 @@ final class Router: ObservableObject {
         case product(productName: String)
         case notes
         case note(noteName: String)
+        case account
     }
     
     @Published var navPath = NavigationPath()

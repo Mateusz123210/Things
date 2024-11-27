@@ -141,7 +141,7 @@ struct CategoriesView: View{
         Group {
             if(orientation == UIDeviceOrientation.landscapeLeft || orientation == UIDeviceOrientation.landscapeRight){
                 HStack {
-                    Text("A")
+                    Text("Categories")
                     
                     
                     
@@ -284,7 +284,7 @@ struct CategoriesView: View{
                             .padding()
                             .frame(width: screenWidth / 3)
                             Button(action: {
-//                                router.navigate(destination: .notes)
+                                router.navigate(destination: .account)
                             }){
                                 Image(systemName: "person.crop.circle")
                                     .font(.system(size: 32))

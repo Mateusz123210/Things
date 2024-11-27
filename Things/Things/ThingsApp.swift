@@ -37,6 +37,8 @@ struct ThingsApp: App {
                         case .note(let noteName):
                             NoteView(loginStatus: loginStatus, noteName: noteName)
                             
+                        case .account:
+                            AccountView(loginStatus: loginStatus)
                         }
                         
                     }
