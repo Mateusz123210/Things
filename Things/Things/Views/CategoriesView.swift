@@ -23,6 +23,7 @@ struct CategoriesView: View{
     @State private var alertMessage = ""
     @State private var categoriesFound: Bool = false
     @State private var userCategories: [CategorySchema] = []
+    @State private var categoriesComponents: [AnyView] = []
     @State private var fetched: Bool = false
     @State private var interfaceState: Modes = Modes.browse
     @State private var categoriesButtonsBlock: Bool = false
@@ -43,7 +44,11 @@ struct CategoriesView: View{
     }
     
     func categoriesFetched(categories: [CategorySchema]){
-        print("C")
+        var tempCategoriesComponents: [AnyView] = []
+        for category in categories{
+            tempCategoriesComponents.append(AnyView(Category(name: category.name, image: category.photo)))
+        }
+        categoriesComponents = tempCategoriesComponents
         userCategories = categories
         categoriesFound = true
         if (fetched == false) {
@@ -65,6 +70,7 @@ struct CategoriesView: View{
         }
         categoriesFound = false
         userCategories = []
+        categoriesComponents = []
     }
     
     
@@ -89,64 +95,124 @@ struct CategoriesView: View{
         return
     }
     
-    func handleCategoryClick(category: CategorySchema) {
-
+    func convertBackToCategory(from category: AnyView) -> Category? {
+        if let categoryComponent = category as? Category {
+            return categoryComponent
+        }
+        return nil
+    }
+    
+    
+    func handleCategoryClick(category: AnyView) {
+        print(convertBackToCategory(from: category))
+        
+        
+        
+        
         if !categoriesButtonsBlock {
-            router.navigate(destination: .categoryProducts(categoryName: category.name))
-            if category.marked == true {
-                
-            }else{
-                router.navigate(destination: .categoryProducts(categoryName: category.name))
-                
-            }
+//            router.navigate(destination: .categoryProducts(categoryName: category.name))
+//            if category.marked == true {
+//                
+//            }else{
+//                router.navigate(destination: .categoryProducts(categoryName: category.name))
+//                
+//            }
         }
         else{
-            categoriesButtonsBlock = false
+//            categoriesButtonsBlock = false
         }
         
     }
     
     func markCategory(name: String, mark: Bool){
-        for cat in userCategories {
-            if cat.name == name{
-                if mark == true{
-//                    cat.marked = true
-                }else{
-//                    cat.marked = false
-                }
-            }
-        }
+//        for cat in userCategories {
+//            if cat.name == name{
+//                if mark == true{
+////                    cat.marked = true
+//                }else{
+////                    cat.marked = false
+//                }
+//            }
+//        }
         
     }
     
-    func handleCategoryLongPress(category: CategorySchema) {
-
-        if category.marked == false {
-            if numberMarked == 0{
-                //mark category
-                numberMarked += 1
-                interfaceState = Modes.editOrDelete
-            }else{
-                
-            }
-        }else{
-            
-        }
-        categoriesButtonsBlock = true
-        lastTouch = Date().timeIntervalSince1970
+    func handleCategoryLongPress(category: AnyView) {
+//        category.marked = true
+//        if category.marked == false {
+//            if numberMarked == 0{
+//                //mark category
+//                numberMarked += 1
+//                interfaceState = Modes.editOrDelete
+//            }else{
+//                
+//            }
+//        }else{
+//            
+//        }
+//        categoriesButtonsBlock = true
+//        lastTouch = Date().timeIntervalSince1970
     }
+    
+//    func getCategory(category: CategorySchema) -> Category? {
+//        for cat in categoriesComponents{
+//            if cat.name == category.name{
+//                print(cat.name)
+//                return cat
+//            }
+//            
+//        }
+//        return nil
+//        
+//    }
     
     
     var body: some View{
         Group {
             if(orientation == UIDeviceOrientation.landscapeLeft || orientation == UIDeviceOrientation.landscapeRight){
-                HStack {
-                    Text("Categories")
+                VStack{
+                    VStack{
+                        HStack{
+                            Text("Things")
+                                .fontWeight(.bold)
+                                .font(Font.system(size: 40))
+                                .foregroundStyle(.darkBlue341943)
+                                .padding(.bottom, 5)
+                                .padding(.leading, 16)
+                            Spacer()
+                            HStack{
+                                Button(action: {
+                                    router.navPath.removeLast()
+                                    router.navigate(destination: .notes)
+                                }){
+                                    Image(systemName: "list.bullet.clipboard")
+                                        .font(.system(size: 32))
+                                        .foregroundStyle(.darkBlue341943)
+                                }
+                                .padding()
+                                
+                                Button(action: {
+                                    router.navPath.removeLast()
+                                    router.navigate(destination: .account)
+                                }){
+                                    Image(systemName: "person.crop.circle")
+                                        .font(.system(size: 32))
+                                        .foregroundStyle(.darkBlue341943)
+                                }
+                                .padding(.trailing, 16)
+                            }
+                            .frame(alignment: .bottomTrailing)
+                        }
+
+                        .background(colorScheme == .dark ? .black : .blue5AC8FA)
+                        .padding(.bottom, 16)
+                        
+                    }
+                    .frame(alignment: .topLeading)
                     
+                    Spacer()
                     
-                    
-                    
-                }.frame(height: screenHeight)
+                }
             }else{
                 VStack{
                     VStack{
@@ -219,21 +285,21 @@ struct CategoriesView: View{
                         if(categoriesFound == true) {
                             ScrollView{
                                 LazyVGrid(columns: columns, spacing: 10){
-                                    ForEach(userCategories, id: \.self) {category in
+                                    ForEach(0..<categoriesComponents.count, id: \.self) {index in
                                         
                                         Button(
                                             action: {
-                                            handleCategoryClick(category: category)
+                                                handleCategoryClick(category: categoriesComponents[index])
                                         }
                                         ){
-                                            Category(name: category.name, image: category.photo,
-                                                     marked: category.marked)
+ 
+                                            categoriesComponents[index]
                                         }
                                         .simultaneousGesture(
                                             LongPressGesture(minimumDuration: 0.5)
 
                                                 .onEnded { _ in
-                                                    handleCategoryLongPress(category: category)
+//                                                    handleCategoryLongPress(category: category)
                                                     
                                                 }
                                         

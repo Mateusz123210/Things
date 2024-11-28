@@ -1,10 +1,10 @@
 import SwiftUI
 
-struct Category: View {
+struct Category: View{
     @Environment(\.colorScheme) var colorScheme
     var name: String
     var image: String?
-    var marked: Bool
+    @State var marked: Bool = false
     
     var body: some View {
         
