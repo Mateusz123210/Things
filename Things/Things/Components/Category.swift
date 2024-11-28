@@ -39,34 +39,44 @@ struct Category: View{
                         .font(Font.system(size: 20))
                         .foregroundStyle(colorScheme == .dark ? .white : .black)
                 }else{
-                    if image != nil {
-                        if let imageConverted = ImageConverter.convertImage(base64String: image!){
-                            imageConverted
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 120, height: 150)
-                                .clipped()
+                    ZStack {
+                        VStack{
+                            if image != nil {
+                                if let imageConverted = ImageConverter.convertImage(base64String: image!){
+                                    imageConverted
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 120, height: 150)
+                                        .clipped()
+                                    
+                                }else{
+                                    Image("NoImage")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 120, height: 150)
+                                        .clipped()
+                                }
+                            }else{
+                                Image("NoImage")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 120, height: 150)
+                                    .clipped()
+                            }
                             
-                        }else{
-                            Image("NoImage")
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 120, height: 150)
-                                .clipped()
+                            Text(name)
+                                .fontWeight(.light)
+                                .font(Font.system(size: 20))
+                                .foregroundStyle(colorScheme == .dark ? .white : .black)
                         }
-                    }else{
-                        Image("NoImage")
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 120, height: 150)
-                            .clipped()
+                        .opacity(0.4)
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 32))
+                            .background(.lightBlue00A7FF)
+                            .clipShape(Circle())
+                        
+                        
                     }
-                    
-                    Text(name)
-                        .fontWeight(.light)
-                        .font(Font.system(size: 20))
-                        .foregroundStyle(colorScheme == .dark ? .white : .black)
-                    Text("b")
                 }
                 
             }
