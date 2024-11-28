@@ -4,7 +4,7 @@ struct Category: View{
     @Environment(\.colorScheme) var colorScheme
     var name: String
     var image: String?
-    @State var marked: Bool = false
+    var marked: Bool = false
     
     var body: some View {
         

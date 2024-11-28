@@ -62,6 +62,7 @@ struct NotesView: View{
                                 .padding(.bottom, 5)
                                 .padding(.leading, 16)
                             Spacer()
+                            
                             HStack{
                                 Button(action: {
                                     router.navPath.removeLast()
@@ -94,6 +95,7 @@ struct NotesView: View{
                     
                     Spacer()
                     Text("Notes")
+    
                     
                 }
             }else{
@@ -116,7 +118,7 @@ struct NotesView: View{
                     .frame(alignment: .topLeading)
                     
                     Spacer()
-                    
+                    Text("Notes")
                     VStack{
                         HStack{
                             Button(action: {

@@ -94,78 +94,7 @@ struct CategoriesView: View{
         print("Delete")
         return
     }
-    
-    func convertBackToCategory(from category: AnyView) -> Category? {
-        if let categoryComponent = category as? Category {
-            return categoryComponent
-        }
-        return nil
-    }
-    
-    
-    func handleCategoryClick(category: AnyView) {
-        print(convertBackToCategory(from: category))
-        
-        
-        
-        
-        if !categoriesButtonsBlock {
-//            router.navigate(destination: .categoryProducts(categoryName: category.name))
-//            if category.marked == true {
-//                
-//            }else{
-//                router.navigate(destination: .categoryProducts(categoryName: category.name))
-//                
-//            }
-        }
-        else{
-//            categoriesButtonsBlock = false
-        }
-        
-    }
-    
-    func markCategory(name: String, mark: Bool){
-//        for cat in userCategories {
-//            if cat.name == name{
-//                if mark == true{
-////                    cat.marked = true
-//                }else{
-////                    cat.marked = false
-//                }
-//            }
-//        }
-        
-    }
-    
-    func handleCategoryLongPress(category: AnyView) {
-//        category.marked = true
-//        if category.marked == false {
-//            if numberMarked == 0{
-//                //mark category
-//                numberMarked += 1
-//                interfaceState = Modes.editOrDelete
-//            }else{
-//                
-//            }
-//        }else{
-//            
-//        }
-//        categoriesButtonsBlock = true
-//        lastTouch = Date().timeIntervalSince1970
-    }
-    
-//    func getCategory(category: CategorySchema) -> Category? {
-//        for cat in categoriesComponents{
-//            if cat.name == category.name{
-//                print(cat.name)
-//                return cat
-//            }
-//            
-//        }
-//        return nil
-//        
-//    }
-    
+   
     
     var body: some View{
         Group {
@@ -211,6 +140,7 @@ struct CategoriesView: View{
                     .frame(alignment: .topLeading)
                     
                     Spacer()
+                    Text("Categories")
                     
                 }
             }else{
@@ -284,22 +214,26 @@ struct CategoriesView: View{
                     if(fetched == true){
                         if(categoriesFound == true) {
                             ScrollView{
+                                
                                 LazyVGrid(columns: columns, spacing: 10){
-                                    ForEach(0..<categoriesComponents.count, id: \.self) {index in
-                                        
+                                    ForEach(userCategories.indices, id: \.self) {index in
+                                    
                                         Button(
                                             action: {
-                                                handleCategoryClick(category: categoriesComponents[index])
+                                                
+                                                userCategories[index].marked = true
                                         }
                                         ){
+                                            Category(name: userCategories[index].name, image: userCategories[index].photo, marked: userCategories[index].marked)
  
-                                            categoriesComponents[index]
+
                                         }
                                         .simultaneousGesture(
                                             LongPressGesture(minimumDuration: 0.5)
 
                                                 .onEnded { _ in
-//                                                    handleCategoryLongPress(category: category)
+                                                    userCategories[index].marked = false
+
                                                     
                                                 }
                                         
@@ -308,7 +242,6 @@ struct CategoriesView: View{
                                     }
                                 
                                 }
-                                
                                 
                                 
                             }
