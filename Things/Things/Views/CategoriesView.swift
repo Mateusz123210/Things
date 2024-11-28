@@ -21,14 +21,16 @@ struct CategoriesView: View{
     @State private var orientation: UIDeviceOrientation = UIDevice.current.orientation
     @State private var showAlert = false
     @State private var alertMessage = ""
+    @State private var showAlert2 = false
+    @State private var alertMessage2 = ""
+    @State private var showAlert3 = false
+    @State private var alertMessage3 = ""
     @State private var categoriesFound: Bool = false
     @State private var userCategories: [CategorySchema] = []
-    @State private var categoriesComponents: [AnyView] = []
     @State private var fetched: Bool = false
     @State private var interfaceState: Modes = Modes.browse
     @State private var categoriesButtonsBlock: Bool = false
-    @State private var numberMarked: Int = 0
-    @State private var lastTouch = Date().timeIntervalSince1970
+    @State private var lastBlockedName: String = ""
     
     private let validator = Validator()
     
@@ -44,24 +46,26 @@ struct CategoriesView: View{
     }
     
     func categoriesFetched(categories: [CategorySchema]){
-        var tempCategoriesComponents: [AnyView] = []
-        for category in categories{
-            tempCategoriesComponents.append(AnyView(Category(name: category.name, image: category.photo)))
-        }
-        categoriesComponents = tempCategoriesComponents
+
         userCategories = categories
         categoriesFound = true
+        
         if (fetched == false) {
             fetched = true
         }
     }
     
     func handleFetchError(message: String){
-        print("handle fetch error: " + message)
+        showAlert(message: message)
     }
     
+    func handleLogout() {
+        loginStatus.handleLogout()
+        router.navigateToRoot()
+    }
     func handleCredentialsError(){
-        print("handle credentials error")
+        alertMessage3 = "Internal error occured. You will be logged out!"
+        showAlert3 = true
     }
     
     func handleNoCategories(){
@@ -70,7 +74,6 @@ struct CategoriesView: View{
         }
         categoriesFound = false
         userCategories = []
-        categoriesComponents = []
     }
     
     
@@ -91,10 +94,48 @@ struct CategoriesView: View{
     }
     
     func deleteCategory(){
-        print("Delete")
-        return
+        var marked = countMarked()
+        
+        if marked == 1 {
+            alertMessage2 = "Are you sure, you want to delete this category?"
+        } else {
+            alertMessage2 = "Are you sure, you want to delete \(marked) categories?"
+        }
+        showAlert2 = true
+    
     }
-   
+    
+    func deleteCategoryConfirmed() {
+        interfaceState = Modes.browse
+        fetched = false
+        var toDelete: [String] = []
+        for category in userCategories {
+            if category.marked == true {
+                toDelete.append(category.name)
+                
+            }
+        }
+        userCategories = []
+        for (index, category) in toDelete.enumerated() {
+            DispatchQueue.global().async{
+                categoriesService.deleteCategory(data:  CategoryDeleteSchema(name: category), loginStatus: loginStatus, viewRef: self)
+                if index == toDelete.count - 1 {
+                    categoriesService.getAllCategories(loginStatus: loginStatus, viewRef: self)
+                }
+            }
+        }
+        
+    }
+    
+    func countMarked() -> Int {
+        var counter: Int = 0
+        for category in userCategories {
+            if category.marked == true {
+                counter += 1
+            }
+        }
+        return counter
+    }
     
     var body: some View{
         Group {
@@ -192,11 +233,13 @@ struct CategoriesView: View{
                                     .foregroundStyle(.redF62D00)
                                     
                                     
-                                } else if (interfaceState == Modes.edit) {
-                                    
-                                    
-                                } else {
-                                    
+                                } else if (interfaceState == Modes.delete) {
+                                    Button("Delete"){
+                                        deleteCategory()
+                                    }
+                                    .fontWeight(.semibold)
+                                    .font(Font.system(size: 17))
+                                    .foregroundStyle(.redF62D00)
                                     
                                 }
                             }
@@ -220,8 +263,39 @@ struct CategoriesView: View{
                                     
                                         Button(
                                             action: {
+                                                if categoriesButtonsBlock == false || lastBlockedName != userCategories[index].name {
+                                                    let marked = countMarked()
+                                                    
+                                                    if marked == 0 {
+                                                        router.navigate(destination: .categoryProducts(categoryName: userCategories[index].name))
+                                                        
+                                                    } else if marked == 1 {
+                                                        
+                                                        if userCategories[index].marked == false {
+                                                            userCategories[index].marked = true
+                                                            interfaceState = Modes.delete
+                                                            
+                                                        }else{
+                                                            userCategories[index].marked = false
+                                                            interfaceState = Modes.browse
+                                                        }
+                            
+                                                    } else if marked == 2 {
+                                                        if userCategories[index].marked == false {
+                                                            userCategories[index].marked = true
+                                                        }else{
+                                                            userCategories[index].marked = false
+                                                            interfaceState = Modes.editOrDelete
+                                                        }
+                                                        
+                                                    } else {
+                                                        userCategories[index].marked = !userCategories[index].marked
+                                                    }
+                                                    
+                                                }
                                                 
-                                                userCategories[index].marked = true
+                                                categoriesButtonsBlock = false
+                                                
                                         }
                                         ){
                                             Category(name: userCategories[index].name, image: userCategories[index].photo, marked: userCategories[index].marked)
@@ -232,18 +306,18 @@ struct CategoriesView: View{
                                             LongPressGesture(minimumDuration: 0.5)
 
                                                 .onEnded { _ in
-                                                    userCategories[index].marked = false
-
+                                                    
+                                                    if countMarked() == 0 {
+                                                        userCategories[index].marked = true
+                                                        categoriesButtonsBlock = true
+                                                        lastBlockedName = userCategories[index].name
+                                                        interfaceState = Modes.editOrDelete
+                                                    }
                                                     
                                                 }
-                                        
                                         )
-                                        
                                     }
-                                
                                 }
-                                
-                                
                             }
                         }
                         else{
@@ -309,7 +383,6 @@ struct CategoriesView: View{
             .navigationBarBackButtonHidden(true)
             .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
             
-            
             if (UIDevice.current.orientation != UIDeviceOrientation.portraitUpsideDown){
                 orientation = UIDevice.current.orientation
             }
@@ -323,6 +396,18 @@ struct CategoriesView: View{
         }
         .alert(isPresented: $showAlert){
             Alert(title: Text("Error"), message: Text(alertMessage))
+        }
+        .alert(alertMessage2, isPresented: $showAlert2){
+            
+            Button("Yes"){
+                deleteCategoryConfirmed()
+            }
+            Button("No"){
+                
+            }
+        }
+        .alert(isPresented: $showAlert3){
+            Alert(title: Text("Error"), message: Text(alertMessage3))
         }
         
     }

@@ -356,8 +356,6 @@ struct AccountView: View{
     private func updateScreenSize() {
         screenHeight = UIScreen.main.bounds.height
         screenWidth = UIScreen.main.bounds.width
-        print(screenWidth)
-        print(screenHeight)
     }
     
 }

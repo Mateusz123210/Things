@@ -12,3 +12,7 @@ struct CategorySchema: Codable, Hashable{
             photo = try container.decodeIfPresent(String.self)
     }
 }
+
+struct CategoryDeleteSchema: Codable, Hashable{
+    let name: String
+}

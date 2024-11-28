@@ -70,11 +70,11 @@ struct Category: View{
                                 .foregroundStyle(colorScheme == .dark ? .white : .black)
                         }
                         .opacity(0.4)
+                        
                         Image(systemName: "checkmark.circle.fill")
                             .font(.system(size: 32))
                             .background(.lightBlue00A7FF)
                             .clipShape(Circle())
-                        
                         
                     }
                 }
