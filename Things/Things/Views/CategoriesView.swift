@@ -33,11 +33,9 @@ struct CategoriesView: View{
     @State private var categoriesButtonsBlock: Bool = false
     @State private var lastBlockedName: String = ""
     @State private var addSchema: CategoryAddSchema = CategoryAddSchema(name: "", photo: nil)
+    @State private var editSchema: CategoryEditSchema = CategoryEditSchema(name: "", photo: nil, old_name: "")
     @State private var showingImagePicker = false
     @State private var inputImage: UIImage?
-    
-
-
     
     private let validator = Validator()
     
@@ -98,17 +96,16 @@ struct CategoriesView: View{
     }
     
     func confirmAdd() {
-        print("confirm")
+
         if addSchema.name.count == 0 {
             print("A")
             alertMessage = "Write name!"
             showAlert = true
             return
         }
-        
+
         DispatchQueue.global().async{
-//            categoriesService.addCategory(data: addSchema, loginStatus: loginStatus, viewRef: self)
-//            backToBrowse()
+            categoriesService.addCategory(data: addSchema, loginStatus: loginStatus, viewRef: self)
             
         }
         
@@ -119,17 +116,62 @@ struct CategoriesView: View{
         interfaceState = Modes.browse
     }
     
+    func backToBrowse2() {
+        editSchema = CategoryEditSchema(name: "", photo: nil, old_name: "")
+        interfaceState = Modes.browse
+        for (index, category) in userCategories.enumerated(){
+            userCategories[index].marked = false
+        }
+    }
+    
     func editCategory(){
+        
+        if let markedCategory = getMarked() {
+            editSchema.name = markedCategory.name
+            editSchema.photo = markedCategory.photo
+            editSchema.old_name = markedCategory.name
+        }
         interfaceState = Modes.edit
-        return
+    }
+    
+    func confirmEdit() {
+
+        if editSchema.name.count == 0 {
+            alertMessage = "Write name!"
+            showAlert = true
+            return
+        }
+
+        DispatchQueue.global().async{
+            categoriesService.editCategory(data: editSchema, loginStatus: loginStatus, viewRef: self)
+            
+        }
+        
     }
 
     func loadImage() {
         guard let inputImage = inputImage else { return }
-        addSchema.photo = ImageConverter.convertImageToBase64String(inputImage)
+
+        if (inputImage.size.width > 120 || inputImage.size.height > 150){
+            if let resizedImage = inputImage.resizeProportionally(toFit: CGSize(width: 120, height: 150)){
+                if interfaceState == Modes.add {
+                    addSchema.photo = ImageConverter.convertImageToBase64String(resizedImage)
+                }else {
+                    editSchema.photo = ImageConverter.convertImageToBase64String(resizedImage)
+                }
+            }
+        }else{
+            if interfaceState == Modes.add {
+                addSchema.photo = ImageConverter.convertImageToBase64String(inputImage)
+            }else {
+                editSchema.photo = ImageConverter.convertImageToBase64String(inputImage)
+            }
+            
+        }
     }
     
     func deleteCategory(){
+        
         var marked = countMarked()
         
         if marked == 1 {
@@ -145,12 +187,14 @@ struct CategoriesView: View{
         interfaceState = Modes.browse
         fetched = false
         var toDelete: [String] = []
+        
         for category in userCategories {
             if category.marked == true {
                 toDelete.append(category.name)
                 
             }
         }
+        
         userCategories = []
         for (index, category) in toDelete.enumerated() {
             DispatchQueue.global().async{
@@ -168,6 +212,15 @@ struct CategoriesView: View{
             }
         }
         return counter
+    }
+    
+    func getMarked() -> CategorySchema? {
+        for category in userCategories {
+            if category.marked == true {
+                return category
+            }
+        }
+        return nil
     }
     
     var body: some View{
@@ -210,11 +263,371 @@ struct CategoriesView: View{
                         .background(colorScheme == .dark ? .black : .blue5AC8FA)
                         .padding(.bottom, 16)
                         
+                        VStack{
+                            HStack{
+                                Text("Categories")
+                                    .fontWeight(.medium)
+                                    .font(Font.system(size: 32))
+                                    .foregroundStyle(colorScheme == .dark ? .white:
+                                            .black)
+                                Spacer()
+                                if (interfaceState == Modes.browse) {
+                                    Button("Refresh"){
+                                        fetchCategories()
+                                    }
+                                    .fontWeight(.semibold)
+                                    .font(Font.system(size: 17))
+                                    .foregroundStyle(.lightGray3C3C43)
+                                    Button("Add"){
+                                        addCategory()
+                                    }
+                                    .fontWeight(.semibold)
+                                    .font(Font.system(size: 17))
+                                    .foregroundStyle(.lightGray3C3C43)
+                                } else if (interfaceState == Modes.editOrDelete){
+                                    Button("Edit"){
+                                        editCategory()
+                                    }
+                                    .fontWeight(.semibold)
+                                    .font(Font.system(size: 17))
+                                    .foregroundStyle(.lightGray3C3C43)
+                                    Button("Delete"){
+                                        deleteCategory()
+                                    }
+                                    .fontWeight(.semibold)
+                                    .font(Font.system(size: 17))
+                                    .foregroundStyle(.redF62D00)
+                                    
+                                    
+                                } else if (interfaceState == Modes.delete) {
+                                    Button("Delete"){
+                                        deleteCategory()
+                                    }
+                                    .fontWeight(.semibold)
+                                    .font(Font.system(size: 17))
+                                    .foregroundStyle(.redF62D00)
+                                    
+                                }
+                            }
+                            .padding(.leading, 16)
+                            .padding(.trailing, 16)
+                            .padding(.top, 2)
+                        }
+                        .padding(.bottom,(screenHeight > 500 ? (0.02 * screenHeight) : (0.005 * screenHeight)))
+                        
                     }
                     .frame(alignment: .topLeading)
                     
                     Spacer()
-                    Text("Categories")
+                    
+                    if (interfaceState == Modes.add){
+                        ScrollView {
+                            VStack {
+                                HStack {
+                                    Button("Cancel"){
+                                        backToBrowse()
+                                    }
+                                    .fontWeight(.bold)
+                                    .font(Font.system(size: 24))
+                                    .foregroundStyle(.lightBlue00A7FF)
+                                    
+                                    Spacer()
+                                    
+                                    Button("Add"){
+                                        confirmAdd()
+                                    }
+                                    .fontWeight(.bold)
+                                    .font(Font.system(size: 24))
+                                    .foregroundStyle(.lightGray3C3C43)
+                                    
+                                    
+                                }
+                                .padding(16)
+                                
+                                Text("Name:")
+                                    .fontWeight(.light)
+                                    .font(Font.system(size: 20))
+                                    .foregroundStyle(colorScheme == .dark ? .white : .black)
+                                    .padding([.top, .leading, .trailing], 16)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                
+                                TextField("", text: $addSchema.name)
+                                    .background(colorScheme == .dark ? .black : .white)
+                                    .foregroundStyle(colorScheme == .dark ? .white : .black)
+                                    .font(Font.system(size: 24))
+                                    .border(Color.gray, width: 1)
+                                    .padding([.leading, .trailing, .bottom], 16)
+                                
+                                Text("Photo:")
+                                    .fontWeight(.light)
+                                    .font(Font.system(size: 20))
+                                    .foregroundStyle(colorScheme == .dark ? .white : .black)
+                                    .padding([.top, .leading, .trailing], 16)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                VStack {
+                                    if addSchema.photo != nil{
+                                        
+                                        if let imageConverted = ImageConverter.convertImage(base64String: addSchema.photo!){
+                                            imageConverted
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fill)
+                                                .frame(width: (screenWidth - 64) * 0.5, height: (screenWidth - 64) * 0.5 * 5 / 4)
+                                                .clipped()
+                                            
+                                        }else{
+                                            Image("NoImage")
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fill)
+                                                .frame(width: (screenWidth - 64) * 0.5, height: (screenWidth - 64) * 0.5 * 5 / 4)
+                                                .clipped()
+                                        }
+                                    } else {
+                                        Image("NoImage")
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fill)
+                                            .frame(width: (screenWidth - 64) * 0.5, height: (screenWidth - 64) * 0.5 * 5 / 4)
+                                            .clipped()
+                                    }
+                                    
+                                }
+                                .padding(.bottom, 8)
+                           
+                                HStack{
+                                    Button("Clear photo"){
+                                        addSchema.photo = ""
+                                        
+                                    }   .fontWeight(.bold)
+                                        .font(Font.system(size: 17))
+                                        .foregroundStyle(.darkGray787678)
+                                        .padding(.leading, 16)
+                                    Spacer()
+                                }
+                                .padding(.bottom, 16)
+
+                                Button("Upload photo"){
+                                    showingImagePicker = true
+                                    
+                                }   .fontWeight(.bold)
+                                    .font(Font.system(size: 32))
+                                    .foregroundStyle(.black)
+                                    .buttonStyle(.bordered)
+                                    .background(.lightBlue00A7FF)
+                                    .cornerRadius(15)
+                                    .padding(.bottom, 16)
+                                
+                                .sheet(isPresented: $showingImagePicker) {
+                                    ImagePicker(image: $inputImage)
+                                }
+                                
+                                
+                                
+                            }
+                            
+                            .background(.lightBlueD6F1FF)
+                            .cornerRadius(15)
+                            .padding(16)
+                            
+                        }
+
+                        .onChange(of: inputImage) { _ in loadImage() }
+                    }
+                    else if (interfaceState == Modes.edit){
+                        ScrollView {
+                            VStack {
+                                HStack {
+                                    Button("Cancel"){
+                                        backToBrowse2()
+                                    }
+                                    .fontWeight(.bold)
+                                    .font(Font.system(size: 24))
+                                    .foregroundStyle(.lightBlue00A7FF)
+                                    
+                                    Spacer()
+                                    
+                                    Button("Save"){
+                                        confirmEdit()
+                                    }
+                                    .fontWeight(.bold)
+                                    .font(Font.system(size: 24))
+                                    .foregroundStyle(.lightGray3C3C43)
+                                    
+                                    
+                                }
+                                .padding(16)
+                                
+                                Text("Name:")
+                                    .fontWeight(.light)
+                                    .font(Font.system(size: 20))
+                                    .foregroundStyle(colorScheme == .dark ? .white : .black)
+                                    .padding([.top, .leading, .trailing], 16)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                
+                                TextField("", text: $editSchema.name)
+                                    .background(colorScheme == .dark ? .black : .white)
+                                    .foregroundStyle(colorScheme == .dark ? .white : .black)
+                                    .font(Font.system(size: 24))
+                                    .border(Color.gray, width: 1)
+                                    .padding([.leading, .trailing, .bottom], 16)
+                                
+                                Text("Photo:")
+                                    .fontWeight(.light)
+                                    .font(Font.system(size: 20))
+                                    .foregroundStyle(colorScheme == .dark ? .white : .black)
+                                    .padding([.top, .leading, .trailing], 16)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                VStack {
+                                    if editSchema.photo != nil{
+                                        
+                                        if let imageConverted = ImageConverter.convertImage(base64String: editSchema.photo!){
+                                            imageConverted
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fill)
+                                                .frame(width: (screenWidth - 64) * 0.5, height: (screenWidth - 64) * 0.5 * 5 / 4)
+                                                .clipped()
+                                            
+                                        }else{
+                                            Image("NoImage")
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fill)
+                                                .frame(width: (screenWidth - 64) * 0.5, height: (screenWidth - 64) * 0.5 * 5 / 4)
+                                                .clipped()
+                                        }
+                                    } else {
+                                        Image("NoImage")
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fill)
+                                            .frame(width: (screenWidth - 64) * 0.5, height: (screenWidth - 64) * 0.5 * 5 / 4)
+                                            .clipped()
+                                    }
+                                    
+                                }
+                                .padding(.bottom, 8)
+                           
+                                HStack{
+                                    Button("Clear photo"){
+                                        editSchema.photo = ""
+                                        
+                                    }   .fontWeight(.bold)
+                                        .font(Font.system(size: 17))
+                                        .foregroundStyle(.darkGray787678)
+                                        .padding(.leading, 16)
+                                    Spacer()
+                                }
+                                .padding(.bottom, 16)
+
+                                Button("Upload photo"){
+                                    showingImagePicker = true
+                                    
+                                }   .fontWeight(.bold)
+                                    .font(Font.system(size: 32))
+                                    .foregroundStyle(.black)
+                                    .buttonStyle(.bordered)
+                                    .background(.lightBlue00A7FF)
+                                    .cornerRadius(15)
+                                    .padding(.bottom, 16)
+                                
+                                .sheet(isPresented: $showingImagePicker) {
+                                    ImagePicker(image: $inputImage)
+                                }
+                                
+                                
+                                
+                            }
+                            
+                            .background(.lightBlueD6F1FF)
+                            .cornerRadius(15)
+                            .padding(16)
+                            
+                        }
+
+                        .onChange(of: inputImage) { _ in loadImage() }
+                    }
+                    else{
+                        if(fetched == true){
+                            if(categoriesFound == true) {
+                                ScrollView{
+                                    
+                                    LazyVGrid(columns: columns, spacing: 10){
+                                        ForEach(userCategories.indices, id: \.self) {index in
+                                            
+                                            Button(
+                                                action: {
+                                                    if categoriesButtonsBlock == false || lastBlockedName != userCategories[index].name {
+                                                        let marked = countMarked()
+                                                        
+                                                        if marked == 0 {
+                                                            router.navigate(destination: .categoryProducts(categoryName: userCategories[index].name))
+                                                            
+                                                        } else if marked == 1 {
+                                                            
+                                                            if userCategories[index].marked == false {
+                                                                userCategories[index].marked = true
+                                                                interfaceState = Modes.delete
+                                                                
+                                                            }else{
+                                                                userCategories[index].marked = false
+                                                                interfaceState = Modes.browse
+                                                            }
+                                                            
+                                                        } else if marked == 2 {
+                                                            if userCategories[index].marked == false {
+                                                                userCategories[index].marked = true
+                                                            }else{
+                                                                userCategories[index].marked = false
+                                                                interfaceState = Modes.editOrDelete
+                                                            }
+                                                            
+                                                        } else {
+                                                            userCategories[index].marked = !userCategories[index].marked
+                                                        }
+                                                        
+                                                    }
+                                                    
+                                                    categoriesButtonsBlock = false
+                                                    
+                                                }
+                                            ){
+                                                Category(name: userCategories[index].name, image: userCategories[index].photo, marked: userCategories[index].marked)
+                                                
+                                                
+                                            }
+                                            .simultaneousGesture(
+                                                LongPressGesture(minimumDuration: 0.5)
+                                                
+                                                    .onEnded { _ in
+                                                        
+                                                        if countMarked() == 0 {
+                                                            userCategories[index].marked = true
+                                                            categoriesButtonsBlock = true
+                                                            lastBlockedName = userCategories[index].name
+                                                            interfaceState = Modes.editOrDelete
+                                                        }
+                                                        
+                                                    }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            else{
+                                VStack{
+                                    Text("You don't have any categories yet!")
+                                        .fontWeight(.medium)
+                                        .font(Font.system(size: 28))
+                                        .foregroundStyle(colorScheme == .dark ? .white:
+                                                .black)
+                                        .multilineTextAlignment(.center)
+                                        .padding()
+                                    
+                                    
+                                    
+                                }
+                                .frame(alignment: .center)
+                                Spacer()
+                            }
+                        }
+                    }
+                    
                     
                 }
             }else{
@@ -385,8 +798,6 @@ struct CategoriesView: View{
                                     ImagePicker(image: $inputImage)
                                 }
                                 
-                                
-                                
                             }
                             
                             .background(.lightBlueD6F1FF)
@@ -398,7 +809,115 @@ struct CategoriesView: View{
                         .onChange(of: inputImage) { _ in loadImage() }
                     }
                     else if (interfaceState == Modes.edit){
-                        
+                        ScrollView {
+                            VStack {
+                                HStack {
+                                    Button("Cancel"){
+                                        backToBrowse2()
+                                    }
+                                    .fontWeight(.bold)
+                                    .font(Font.system(size: 24))
+                                    .foregroundStyle(.lightBlue00A7FF)
+                                    
+                                    Spacer()
+                                    
+                                    Button("Save"){
+                                        confirmEdit()
+                                    }
+                                    .fontWeight(.bold)
+                                    .font(Font.system(size: 24))
+                                    .foregroundStyle(.lightGray3C3C43)
+                                    
+                                    
+                                }
+                                .padding(16)
+                                
+                                Text("Name:")
+                                    .fontWeight(.light)
+                                    .font(Font.system(size: 20))
+                                    .foregroundStyle(colorScheme == .dark ? .white : .black)
+                                    .padding([.top, .leading, .trailing], 16)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                
+                                TextField("", text: $editSchema.name)
+                                    .background(colorScheme == .dark ? .black : .white)
+                                    .foregroundStyle(colorScheme == .dark ? .white : .black)
+                                    .font(Font.system(size: 24))
+                                    .border(Color.gray, width: 1)
+                                    .padding([.leading, .trailing, .bottom], 16)
+                                
+                                Text("Photo:")
+                                    .fontWeight(.light)
+                                    .font(Font.system(size: 20))
+                                    .foregroundStyle(colorScheme == .dark ? .white : .black)
+                                    .padding([.top, .leading, .trailing], 16)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                VStack {
+                                    if editSchema.photo != nil{
+                                        
+                                        if let imageConverted = ImageConverter.convertImage(base64String: editSchema.photo!){
+                                            imageConverted
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fill)
+                                                .frame(width: (screenWidth - 64) * 0.9, height: (screenWidth - 64) * 0.9 * 5 / 4)
+                                                .clipped()
+                                            
+                                        }else{
+                                            Image("NoImage")
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fill)
+                                                .frame(width: (screenWidth - 64) * 0.9, height: (screenWidth - 64) * 0.9 * 5 / 4)
+                                                .clipped()
+                                        }
+                                    } else {
+                                        Image("NoImage")
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fill)
+                                            .frame(width: (screenWidth - 64) * 0.9, height: (screenWidth - 64) * 0.9 * 5 / 4)
+                                            .clipped()
+                                    }
+                                    
+                                }
+                                .padding(.bottom, 8)
+                           
+                                HStack{
+                                    Button("Clear photo"){
+                                        editSchema.photo = ""
+                                        
+                                    }   .fontWeight(.bold)
+                                        .font(Font.system(size: 17))
+                                        .foregroundStyle(.darkGray787678)
+                                        .padding(.leading, 16)
+                                    Spacer()
+                                }
+                                .padding(.bottom, 16)
+
+                                Button("Upload photo"){
+                                    showingImagePicker = true
+                                    
+                                }   .fontWeight(.bold)
+                                    .font(Font.system(size: 32))
+                                    .foregroundStyle(.black)
+                                    .buttonStyle(.bordered)
+                                    .background(.lightBlue00A7FF)
+                                    .cornerRadius(15)
+                                    .padding(.bottom, 16)
+                                
+                                .sheet(isPresented: $showingImagePicker) {
+                                    ImagePicker(image: $inputImage)
+                                }
+                                
+                                
+                                
+                            }
+                            
+                            .background(.lightBlueD6F1FF)
+                            .cornerRadius(15)
+                            .padding(16)
+                            
+                        }
+
+                        .onChange(of: inputImage) { _ in loadImage() }
                     }
                     else{
                         if(fetched == true){
