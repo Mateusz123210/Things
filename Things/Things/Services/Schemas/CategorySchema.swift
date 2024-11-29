@@ -13,6 +13,13 @@ struct CategorySchema: Codable, Hashable{
     }
 }
 
+struct CategoryAddSchema: Codable, Hashable{
+    
+    var name: String
+    var photo: String?
+
+}
+
 struct CategoryDeleteSchema: Codable, Hashable{
     let name: String
 }

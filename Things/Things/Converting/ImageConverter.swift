@@ -9,6 +9,12 @@ class ImageConverter{
         }
         return nil
     }
+    
+    static func convertImageToBase64String(_ image: UIImage) -> String? {
+            guard let imageData = image.jpegData(compressionQuality: 1.0) else { return nil }
+            return imageData.base64EncodedString(options: .lineLength64Characters)
+        }
+
 }
 
 

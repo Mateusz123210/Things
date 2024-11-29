@@ -1,5 +1,6 @@
 import SwiftUI
 import Foundation
+import PhotosUI
 
 enum Modes {
     case browse
@@ -31,6 +32,12 @@ struct CategoriesView: View{
     @State private var interfaceState: Modes = Modes.browse
     @State private var categoriesButtonsBlock: Bool = false
     @State private var lastBlockedName: String = ""
+    @State private var addSchema: CategoryAddSchema = CategoryAddSchema(name: "", photo: nil)
+    @State private var showingImagePicker = false
+    @State private var inputImage: UIImage?
+    
+
+
     
     private let validator = Validator()
     
@@ -56,6 +63,7 @@ struct CategoriesView: View{
     }
     
     func handleFetchError(message: String){
+        print(message)
         showAlert(message: message)
     }
     
@@ -64,6 +72,7 @@ struct CategoriesView: View{
         router.navigateToRoot()
     }
     func handleCredentialsError(){
+        print("cre eroor")
         alertMessage3 = "Internal error occured. You will be logged out!"
         showAlert3 = true
     }
@@ -82,15 +91,42 @@ struct CategoriesView: View{
             categoriesService.getAllCategories(loginStatus: loginStatus, viewRef: self)
         }
     }
-    
+       
     func addCategory(){
-        print("Add")
-        return
+        interfaceState = Modes.add
+
+    }
+    
+    func confirmAdd() {
+        print("confirm")
+        if addSchema.name.count == 0 {
+            print("A")
+            alertMessage = "Write name!"
+            showAlert = true
+            return
+        }
+        
+        DispatchQueue.global().async{
+//            categoriesService.addCategory(data: addSchema, loginStatus: loginStatus, viewRef: self)
+//            backToBrowse()
+            
+        }
+        
+    }
+    
+    func backToBrowse() {
+        addSchema = CategoryAddSchema(name: "", photo: nil)
+        interfaceState = Modes.browse
     }
     
     func editCategory(){
-        print("Edit")
+        interfaceState = Modes.edit
         return
+    }
+
+    func loadImage() {
+        guard let inputImage = inputImage else { return }
+        addSchema.photo = ImageConverter.convertImageToBase64String(inputImage)
     }
     
     func deleteCategory(){
@@ -119,9 +155,6 @@ struct CategoriesView: View{
         for (index, category) in toDelete.enumerated() {
             DispatchQueue.global().async{
                 categoriesService.deleteCategory(data:  CategoryDeleteSchema(name: category), loginStatus: loginStatus, viewRef: self)
-                if index == toDelete.count - 1 {
-                    categoriesService.getAllCategories(loginStatus: loginStatus, viewRef: self)
-                }
             }
         }
         
@@ -252,89 +285,204 @@ struct CategoriesView: View{
                         
                     }
                     .frame(alignment: .topLeading)
-                    
                     Spacer()
-                    if(fetched == true){
-                        if(categoriesFound == true) {
-                            ScrollView{
-                                
-                                LazyVGrid(columns: columns, spacing: 10){
-                                    ForEach(userCategories.indices, id: \.self) {index in
+                    if (interfaceState == Modes.add){
+                        ScrollView {
+                            VStack {
+                                HStack {
+                                    Button("Cancel"){
+                                        backToBrowse()
+                                    }
+                                    .fontWeight(.bold)
+                                    .font(Font.system(size: 24))
+                                    .foregroundStyle(.lightBlue00A7FF)
                                     
-                                        Button(
-                                            action: {
-                                                if categoriesButtonsBlock == false || lastBlockedName != userCategories[index].name {
-                                                    let marked = countMarked()
-                                                    
-                                                    if marked == 0 {
-                                                        router.navigate(destination: .categoryProducts(categoryName: userCategories[index].name))
-                                                        
-                                                    } else if marked == 1 {
-                                                        
-                                                        if userCategories[index].marked == false {
-                                                            userCategories[index].marked = true
-                                                            interfaceState = Modes.delete
-                                                            
-                                                        }else{
-                                                            userCategories[index].marked = false
-                                                            interfaceState = Modes.browse
-                                                        }
+                                    Spacer()
+                                    
+                                    Button("Add"){
+                                        confirmAdd()
+                                    }
+                                    .fontWeight(.bold)
+                                    .font(Font.system(size: 24))
+                                    .foregroundStyle(.lightGray3C3C43)
+                                    
+                                    
+                                }
+                                .padding(16)
+                                
+                                Text("Name:")
+                                    .fontWeight(.light)
+                                    .font(Font.system(size: 20))
+                                    .foregroundStyle(colorScheme == .dark ? .white : .black)
+                                    .padding([.top, .leading, .trailing], 16)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                
+                                TextField("", text: $addSchema.name)
+                                    .background(colorScheme == .dark ? .black : .white)
+                                    .foregroundStyle(colorScheme == .dark ? .white : .black)
+                                    .font(Font.system(size: 24))
+                                    .border(Color.gray, width: 1)
+                                    .padding([.leading, .trailing, .bottom], 16)
+                                
+                                Text("Photo:")
+                                    .fontWeight(.light)
+                                    .font(Font.system(size: 20))
+                                    .foregroundStyle(colorScheme == .dark ? .white : .black)
+                                    .padding([.top, .leading, .trailing], 16)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                VStack {
+                                    if addSchema.photo != nil{
+                                        
+                                        if let imageConverted = ImageConverter.convertImage(base64String: addSchema.photo!){
+                                            imageConverted
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fill)
+                                                .frame(width: (screenWidth - 64) * 0.9, height: (screenWidth - 64) * 0.9 * 5 / 4)
+                                                .clipped()
+                                            
+                                        }else{
+                                            Image("NoImage")
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fill)
+                                                .frame(width: (screenWidth - 64) * 0.9, height: (screenWidth - 64) * 0.9 * 5 / 4)
+                                                .clipped()
+                                        }
+                                    } else {
+                                        Image("NoImage")
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fill)
+                                            .frame(width: (screenWidth - 64) * 0.9, height: (screenWidth - 64) * 0.9 * 5 / 4)
+                                            .clipped()
+                                    }
+                                    
+                                }
+                                .padding(.bottom, 8)
+                           
+                                HStack{
+                                    Button("Clear photo"){
+                                        addSchema.photo = ""
+                                        
+                                    }   .fontWeight(.bold)
+                                        .font(Font.system(size: 17))
+                                        .foregroundStyle(.darkGray787678)
+                                        .padding(.leading, 16)
+                                    Spacer()
+                                }
+                                .padding(.bottom, 16)
+
+                                Button("Upload photo"){
+                                    showingImagePicker = true
+                                    
+                                }   .fontWeight(.bold)
+                                    .font(Font.system(size: 32))
+                                    .foregroundStyle(.black)
+                                    .buttonStyle(.bordered)
+                                    .background(.lightBlue00A7FF)
+                                    .cornerRadius(15)
+                                    .padding(.bottom, 16)
+                                
+                                .sheet(isPresented: $showingImagePicker) {
+                                    ImagePicker(image: $inputImage)
+                                }
+                                
+                                
+                                
+                            }
                             
-                                                    } else if marked == 2 {
-                                                        if userCategories[index].marked == false {
+                            .background(.lightBlueD6F1FF)
+                            .cornerRadius(15)
+                            .padding(16)
+                            
+                        }
+
+                        .onChange(of: inputImage) { _ in loadImage() }
+                    }
+                    else if (interfaceState == Modes.edit){
+                        
+                    }
+                    else{
+                        if(fetched == true){
+                            if(categoriesFound == true) {
+                                ScrollView{
+                                    
+                                    LazyVGrid(columns: columns, spacing: 10){
+                                        ForEach(userCategories.indices, id: \.self) {index in
+                                            
+                                            Button(
+                                                action: {
+                                                    if categoriesButtonsBlock == false || lastBlockedName != userCategories[index].name {
+                                                        let marked = countMarked()
+                                                        
+                                                        if marked == 0 {
+                                                            router.navigate(destination: .categoryProducts(categoryName: userCategories[index].name))
+                                                            
+                                                        } else if marked == 1 {
+                                                            
+                                                            if userCategories[index].marked == false {
+                                                                userCategories[index].marked = true
+                                                                interfaceState = Modes.delete
+                                                                
+                                                            }else{
+                                                                userCategories[index].marked = false
+                                                                interfaceState = Modes.browse
+                                                            }
+                                                            
+                                                        } else if marked == 2 {
+                                                            if userCategories[index].marked == false {
+                                                                userCategories[index].marked = true
+                                                            }else{
+                                                                userCategories[index].marked = false
+                                                                interfaceState = Modes.editOrDelete
+                                                            }
+                                                            
+                                                        } else {
+                                                            userCategories[index].marked = !userCategories[index].marked
+                                                        }
+                                                        
+                                                    }
+                                                    
+                                                    categoriesButtonsBlock = false
+                                                    
+                                                }
+                                            ){
+                                                Category(name: userCategories[index].name, image: userCategories[index].photo, marked: userCategories[index].marked)
+                                                
+                                                
+                                            }
+                                            .simultaneousGesture(
+                                                LongPressGesture(minimumDuration: 0.5)
+                                                
+                                                    .onEnded { _ in
+                                                        
+                                                        if countMarked() == 0 {
                                                             userCategories[index].marked = true
-                                                        }else{
-                                                            userCategories[index].marked = false
+                                                            categoriesButtonsBlock = true
+                                                            lastBlockedName = userCategories[index].name
                                                             interfaceState = Modes.editOrDelete
                                                         }
                                                         
-                                                    } else {
-                                                        userCategories[index].marked = !userCategories[index].marked
                                                     }
-                                                    
-                                                }
-                                                
-                                                categoriesButtonsBlock = false
-                                                
+                                            )
                                         }
-                                        ){
-                                            Category(name: userCategories[index].name, image: userCategories[index].photo, marked: userCategories[index].marked)
- 
-
-                                        }
-                                        .simultaneousGesture(
-                                            LongPressGesture(minimumDuration: 0.5)
-
-                                                .onEnded { _ in
-                                                    
-                                                    if countMarked() == 0 {
-                                                        userCategories[index].marked = true
-                                                        categoriesButtonsBlock = true
-                                                        lastBlockedName = userCategories[index].name
-                                                        interfaceState = Modes.editOrDelete
-                                                    }
-                                                    
-                                                }
-                                        )
                                     }
                                 }
                             }
-                        }
-                        else{
-                            VStack{
-                                Text("You don't have any categories yet!")
-                                    .fontWeight(.medium)
-                                    .font(Font.system(size: 28))
-                                    .foregroundStyle(colorScheme == .dark ? .white:
-                                            .black)
-                                    .multilineTextAlignment(.center)
-                                    .padding()
-                                
-                                
-                                
+                            else{
+                                VStack{
+                                    Text("You don't have any categories yet!")
+                                        .fontWeight(.medium)
+                                        .font(Font.system(size: 28))
+                                        .foregroundStyle(colorScheme == .dark ? .white:
+                                                .black)
+                                        .multilineTextAlignment(.center)
+                                        .padding()
+                                    
+                                    
+                                    
+                                }
+                                .frame(alignment: .center)
+                                Spacer()
                             }
-                            .frame(alignment: .center)
-                            Spacer()
                         }
                     }
                     
@@ -377,11 +525,12 @@ struct CategoriesView: View{
             }
             
             
-        }   .onAppear {
-                fetchCategories()
-            }
-            .navigationBarBackButtonHidden(true)
-            .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
+        }
+        .onAppear {
+            fetchCategories()
+        }
+        .navigationBarBackButtonHidden(true)
+        .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
             
             if (UIDevice.current.orientation != UIDeviceOrientation.portraitUpsideDown){
                 orientation = UIDevice.current.orientation

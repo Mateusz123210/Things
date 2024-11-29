@@ -122,7 +122,7 @@ struct CategoriesService{
         return
     }
     
-    func addCategory(loginStatus: LoginStatus, viewRef: CategoriesView, enableRefreshToken: Bool = true, tokensCopy: TokensSchema? = nil){
+    func addCategory(data: CategoryAddSchema, loginStatus: LoginStatus, viewRef: CategoriesView, enableRefreshToken: Bool = true, tokensCopy: TokensSchema? = nil){
         
         let url = "https://things2024.azurewebsites.net/category"
         
@@ -144,10 +144,14 @@ struct CategoriesService{
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
+        do {
+            let jsonData = try JSONEncoder().encode(data)
+            request.httpBody = jsonData
             URLSession.shared.dataTask(with: request) {data, response, error in
+                
                 if let error = error {
                     
-                        viewRef.handleFetchError(message: "Connection problem occured")
+                    viewRef.handleFetchError(message: "Connection problem occured")
                     
                     return
                     
@@ -185,7 +189,7 @@ struct CategoriesService{
                                         }else{
                                             if(fetchedTokens.message != nil){
                                                 let message = fetchedTokens.message!
-            
+                                                
                                                 viewRef.handleFetchError(message: message)
                                                 
                                             }else{
@@ -210,33 +214,22 @@ struct CategoriesService{
                         }else{
                             let detail = try JSONDecoder().decode(DetailSchema.self, from: data)
                             viewRef.handleFetchError(message: detail.detail)
-                
+                            
                         }
                         
                     } catch let jsonError {
                         viewRef.handleFetchError(message: "Internal problem occured")
                     }
-                        
+                    
                     return
                 }
-                
-                do{
-                    let resp = String(bytes: data, encoding: .utf8)
-                    
-                    if (resp!.count == 2){
-                        viewRef.handleNoCategories()
-                    }
-                    else{
-                                 
-                        let categories = try JSONDecoder().decode([CategorySchema].self, from: data)
-                        viewRef.categoriesFetched(categories: categories)
-                    }
-                    
-                } catch let jsonError {
-                    viewRef.handleFetchError(message: "Internal problem occured")
-                }
-                
+                viewRef.fetchCategories()
             }.resume()
+        }catch {
+            DispatchQueue.main.async {
+                viewRef.showAlert(message: "Internal problem occured")
+            }
+        }
         return
     }
     
@@ -460,6 +453,8 @@ struct CategoriesService{
                     
                     return
                 }
+
+                viewRef.fetchCategories()
                 
             }.resume()
         }catch {
