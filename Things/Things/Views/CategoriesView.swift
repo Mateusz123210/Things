@@ -36,9 +36,7 @@ struct CategoriesView: View{
     @State private var editSchema: CategoryEditSchema = CategoryEditSchema(name: "", photo: nil, old_name: "")
     @State private var showingImagePicker = false
     @State private var inputImage: UIImage?
-    
-    private let validator = Validator()
-    
+
     let columns = [
         GridItem(.adaptive(minimum: 152, maximum: 182), spacing: 10)
     ]
@@ -105,7 +103,7 @@ struct CategoriesView: View{
         }
 
         DispatchQueue.global().async{
-            categoriesService.addCategory(data: addSchema, loginStatus: loginStatus, viewRef: self)
+            categoriesService.addCategory(paramsData: addSchema, loginStatus: loginStatus, viewRef: self)
             
         }
         
@@ -143,7 +141,7 @@ struct CategoriesView: View{
         }
 
         DispatchQueue.global().async{
-            categoriesService.editCategory(data: editSchema, loginStatus: loginStatus, viewRef: self)
+            categoriesService.editCategory(paramsData: editSchema, loginStatus: loginStatus, viewRef: self)
             
         }
         
@@ -198,7 +196,7 @@ struct CategoriesView: View{
         userCategories = []
         for (index, category) in toDelete.enumerated() {
             DispatchQueue.global().async{
-                categoriesService.deleteCategory(data:  CategoryDeleteSchema(name: category), loginStatus: loginStatus, viewRef: self)
+                categoriesService.deleteCategory(paramsData:  CategoryDeleteSchema(name: category), loginStatus: loginStatus, viewRef: self)
             }
         }
         

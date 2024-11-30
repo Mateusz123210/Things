@@ -122,7 +122,7 @@ struct CategoriesService{
         return
     }
     
-    func addCategory(data: CategoryAddSchema, loginStatus: LoginStatus, viewRef: CategoriesView, enableRefreshToken: Bool = true, tokensCopy: TokensSchema? = nil){
+    func addCategory(paramsData: CategoryAddSchema, loginStatus: LoginStatus, viewRef: CategoriesView, enableRefreshToken: Bool = true, tokensCopy: TokensSchema? = nil){
         
         let url = "https://things2024.azurewebsites.net/category"
         
@@ -145,7 +145,7 @@ struct CategoriesService{
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
         do {
-            let jsonData = try JSONEncoder().encode(data)
+            let jsonData = try JSONEncoder().encode(paramsData)
             request.httpBody = jsonData
             URLSession.shared.dataTask(with: request) {data, response, error in
                 
@@ -184,7 +184,7 @@ struct CategoriesService{
                                                 loginStatus.accessToken = accessToken
                                                 loginStatus.refreshToken = refreshToken
                                             }
-                                            return getAllCategories(loginStatus: loginStatus, viewRef: viewRef, enableRefreshToken: false, tokensCopy: TokensSchema(access_token: accessToken, refresh_token: refreshToken))
+                                            return addCategory(paramsData: paramsData, loginStatus: loginStatus, viewRef: viewRef, enableRefreshToken: false, tokensCopy: TokensSchema(access_token: accessToken, refresh_token: refreshToken))
                                             
                                         }else{
                                             if(fetchedTokens.message != nil){
@@ -234,7 +234,7 @@ struct CategoriesService{
         return
     }
     
-    func editCategory(data: CategoryEditSchema, loginStatus: LoginStatus, viewRef: CategoriesView, enableRefreshToken: Bool = true, tokensCopy: TokensSchema? = nil){
+    func editCategory(paramsData: CategoryEditSchema, loginStatus: LoginStatus, viewRef: CategoriesView, enableRefreshToken: Bool = true, tokensCopy: TokensSchema? = nil){
         
         let url = "https://things2024.azurewebsites.net/category"
         
@@ -257,7 +257,7 @@ struct CategoriesService{
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
         do {
-            let jsonData = try JSONEncoder().encode(data)
+            let jsonData = try JSONEncoder().encode(paramsData)
             request.httpBody = jsonData
             URLSession.shared.dataTask(with: request) {data, response, error in
                 
@@ -296,7 +296,7 @@ struct CategoriesService{
                                                 loginStatus.accessToken = accessToken
                                                 loginStatus.refreshToken = refreshToken
                                             }
-                                            return getAllCategories(loginStatus: loginStatus, viewRef: viewRef, enableRefreshToken: false, tokensCopy: TokensSchema(access_token: accessToken, refresh_token: refreshToken))
+                                            return editCategory(paramsData: paramsData, loginStatus: loginStatus, viewRef: viewRef, enableRefreshToken: false, tokensCopy: TokensSchema(access_token: accessToken, refresh_token: refreshToken))
                                             
                                         }else{
                                             if(fetchedTokens.message != nil){
@@ -347,7 +347,7 @@ struct CategoriesService{
     }
     
     
-    func deleteCategory(data: CategoryDeleteSchema, loginStatus: LoginStatus, viewRef: CategoriesView, enableRefreshToken: Bool = true, tokensCopy: TokensSchema? = nil){
+    func deleteCategory(paramsData: CategoryDeleteSchema, loginStatus: LoginStatus, viewRef: CategoriesView, enableRefreshToken: Bool = true, tokensCopy: TokensSchema? = nil){
         
         let url = "https://things2024.azurewebsites.net/category"
         
@@ -370,7 +370,7 @@ struct CategoriesService{
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
         do {
-            let jsonData = try JSONEncoder().encode(data)
+            let jsonData = try JSONEncoder().encode(paramsData)
             request.httpBody = jsonData
             
             URLSession.shared.dataTask(with: request) {data, response, error in
@@ -410,7 +410,7 @@ struct CategoriesService{
                                                 loginStatus.accessToken = accessToken
                                                 loginStatus.refreshToken = refreshToken
                                             }
-                                            return getAllCategories(loginStatus: loginStatus, viewRef: viewRef, enableRefreshToken: false, tokensCopy: TokensSchema(access_token: accessToken, refresh_token: refreshToken))
+                                            return deleteCategory(paramsData: paramsData, loginStatus: loginStatus, viewRef: viewRef, enableRefreshToken: false, tokensCopy: TokensSchema(access_token: accessToken, refresh_token: refreshToken))
                                             
                                         }else{
                                             if(fetchedTokens.message != nil){
