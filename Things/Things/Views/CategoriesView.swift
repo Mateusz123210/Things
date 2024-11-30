@@ -22,10 +22,7 @@ struct CategoriesView: View{
     @State private var orientation: UIDeviceOrientation = UIDevice.current.orientation
     @State private var showAlert = false
     @State private var alertMessage = ""
-    @State private var showAlert2 = false
-    @State private var alertMessage2 = ""
-    @State private var showAlert3 = false
-    @State private var alertMessage3 = ""
+    @State private var alertType: Int = 1
     @State private var categoriesFound: Bool = false
     @State private var userCategories: [CategorySchema] = []
     @State private var fetched: Bool = false
@@ -45,6 +42,7 @@ struct CategoriesView: View{
     
     func showAlert(message: String){
         alertMessage = message
+        alertType = 1
         showAlert = true
     }
     
@@ -69,8 +67,9 @@ struct CategoriesView: View{
     }
     func handleCredentialsError(){
         print("cre eroor")
-        alertMessage3 = "Internal error occured. You will be logged out!"
-        showAlert3 = true
+        alertMessage = "Internal error occured. You will be logged out!"
+        alertType = 3
+        showAlert = true
     }
     
     func handleNoCategories(){
@@ -98,6 +97,7 @@ struct CategoriesView: View{
         if addSchema.name.count == 0 {
             print("A")
             alertMessage = "Write name!"
+            alertType = 1
             showAlert = true
             return
         }
@@ -136,6 +136,7 @@ struct CategoriesView: View{
 
         if editSchema.name.count == 0 {
             alertMessage = "Write name!"
+            alertType = 3
             showAlert = true
             return
         }
@@ -173,11 +174,12 @@ struct CategoriesView: View{
         var marked = countMarked()
         
         if marked == 1 {
-            alertMessage2 = "Are you sure, you want to delete this category?"
+            alertMessage = "Are you sure, you want to delete this category?"
         } else {
-            alertMessage2 = "Are you sure, you want to delete \(marked) categories?"
+            alertMessage = "Are you sure, you want to delete \(marked) categories?"
         }
-        showAlert2 = true
+        alertType = 2
+        showAlert = true
     
     }
     
@@ -1061,21 +1063,24 @@ struct CategoriesView: View{
             updateScreenSize()
         }
         .alert(isPresented: $showAlert){
-            Alert(title: Text("Error"), message: Text(alertMessage))
-        }
-        .alert(alertMessage2, isPresented: $showAlert2){
-            
-            Button("Yes"){
-                deleteCategoryConfirmed()
+
+            if alertType == 1 {
+                return Alert(title: Text("Error"), message: Text(alertMessage))
+            }else if alertType == 2 {
+                return Alert(title: Text(alertMessage),
+                    primaryButton: .default(Text("Yes")) {
+                        deleteCategoryConfirmed()
+                    }, secondaryButton: .default(Text("No")) {
+
+                    }
+                        )
+
+            }else {
+                return Alert(title: Text("Error"), message: Text(alertMessage))
             }
-            Button("No"){
+
+        }
                 
-            }
-        }
-        .alert(isPresented: $showAlert3){
-            Alert(title: Text("Error"), message: Text(alertMessage3))
-        }
-        
     }
     
     private func updateScreenSize() {

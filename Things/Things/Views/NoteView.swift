@@ -192,7 +192,7 @@ struct NoteView: View{
                             Text("Text")
                                 .fontWeight(.light)
                                 .font(Font.system(size: 24))
-                                .foregroundStyle(.lightBlack202C37)
+                                .foregroundStyle(colorScheme == .dark ? .white : .black)
                                 .padding(12)
                                 .frame(maxWidth: .infinity, alignment: .leading)
 
