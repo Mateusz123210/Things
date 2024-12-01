@@ -179,11 +179,11 @@ def delete_category(access_token, email, data, session):
 
 @mongo_transactional
 @transactional
-def get_category_products(access_token, email, data, session):
+def get_category_products(access_token, email, name, session):
 
     deps.validate_user_token(access_token, email)
     
-    if len(data.name) == 0:
+    if len(name) == 0:
         raise HTTPException(status_code=400, detail="Category name not given!")
 
     user = collection_things.find_one({"email": email}, session=session)
@@ -195,7 +195,7 @@ def get_category_products(access_token, email, data, session):
         category_index = None
 
         for i in range (len(user_categories)):
-            if data.name == user_categories[i][0]:
+            if name == user_categories[i][0]:
                 category_index = i
                 
         if category_index is None:
@@ -204,7 +204,7 @@ def get_category_products(access_token, email, data, session):
         user_products = user["products"]
 
         for i in reversed (range (len (user_products))):
-            if data.name != user_products[i][1]:
+            if name != user_products[i][1]:
                 del user_products[i]
         
         return user_products
@@ -215,14 +215,14 @@ def get_category_products(access_token, email, data, session):
 
 @mongo_transactional
 @transactional
-def get_product(access_token, email, data, session):
+def get_product(access_token, email, name, category_name, session):
 
     deps.validate_user_token(access_token, email)
 
-    if len(data.name) == 0:
+    if len(name) == 0:
             raise HTTPException(status_code=400, detail="Product name not given!")
     
-    if len(data.category_name) == 0:
+    if len(category_name) == 0:
             raise HTTPException(status_code=400, detail="Category name not given!")
     
     user = collection_things.find_one({"email": email}, session=session)
@@ -234,7 +234,7 @@ def get_product(access_token, email, data, session):
         category_index = None
 
         for i in range (len(user_categories)):
-            if data.category_name == user_categories[i][0]:
+            if category_name == user_categories[i][0]:
                 category_index = i
                 
         if category_index is None:
@@ -243,7 +243,7 @@ def get_product(access_token, email, data, session):
         user_products = user["products"]
 
         for i in range (len (user_products)):
-            if data.name == user_products[i][0] and data.category_name == user_products[i][1]:
+            if name == user_products[i][0] and category_name == user_products[i][1]:
                 return user_products[i]
                
     else:
@@ -416,11 +416,11 @@ def get_notes(access_token, email, session):
 
 @mongo_transactional
 @transactional
-def get_note(access_token, email, data, session):
+def get_note(access_token, email, name, session):
 
     deps.validate_user_token(access_token, email)
 
-    if len(data.name) == 0:
+    if len(name) == 0:
         raise HTTPException(status_code=400, detail="Note tittle not given!")
 
     user = collection_things.find_one({"email": email}, session=session)
@@ -430,7 +430,7 @@ def get_note(access_token, email, data, session):
         user_notes = user["notes"]
 
         for i in range (len (user_notes)):
-            if data.name == user_notes[i][0]:
+            if name == user_notes[i][0]:
                 return user_notes[i]
                 
     raise HTTPException(status_code=400, detail="Note does not exist!")

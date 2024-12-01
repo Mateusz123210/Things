@@ -98,12 +98,12 @@ async def delete_category(access_token: str, email: str, data: CategoryName):
     return mongo_services.delete_category(access_token, email, data)
 
 @app.get('/category-products')
-async def get_category_products(access_token: str, email: str, data: CategoryName):
-    return mongo_services.get_category_products(access_token, email, data)
+async def get_category_products(access_token: str, email: str, name: str):
+    return mongo_services.get_category_products(access_token, email, name)
 
 @app.get('/product')
-async def get_product(access_token: str, email: str, data: ProductName):
-    return mongo_services.get_product(access_token, email, data)
+async def get_product(access_token: str, email: str, name: str, category_name: str):
+    return mongo_services.get_product(access_token, email, name, category_name)
 
 @app.post('/product')
 async def add_product(access_token: str, email: str, data: ProductAdd):
@@ -121,8 +121,8 @@ async def get_notes(access_token: str, email: str):
     return mongo_services.get_notes(access_token, email)
 
 @app.get('/note')
-async def get_note(access_token: str, email: str, data: NoteName):
-    return mongo_services.get_note(access_token, email, data)
+async def get_note(access_token: str, email: str, name: str):
+    return mongo_services.get_note(access_token, email, name)
 
 @app.post('/note')
 async def add_note(access_token: str, email: str, data: NoteAdd):
