@@ -29,5 +29,7 @@ struct CategoryEditSchema: Codable, Hashable{
 }
 
 struct CategoryDeleteSchema: Codable, Hashable{
+    
     let name: String
+    
 }
