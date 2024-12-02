@@ -2,8 +2,8 @@ import SwiftUI
 
 struct ProductFetchSchema: Codable, Hashable{
     
-    let categoryName: String
     let name: String
+    let categoryName: String
     let quantity: String
     let photo: String?
     let audio: String?
@@ -12,8 +12,8 @@ struct ProductFetchSchema: Codable, Hashable{
     
     init(from decoder: Decoder) throws {
             var container = try decoder.unkeyedContainer()
-            categoryName = try container.decode(String.self)
             name = try container.decode(String.self)
+            categoryName = try container.decode(String.self)
             quantity = try container.decode(String.self)
             photo = try container.decodeIfPresent(String.self)
             audio = try container.decodeIfPresent(String.self)

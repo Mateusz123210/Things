@@ -463,7 +463,7 @@ struct CategoriesService{
     
     func getCategory(categoryName: String, loginStatus: LoginStatus, viewRef: CategoryView, enableRefreshToken: Bool = true, tokensCopy: TokensSchema? = nil){
         
-        let url = "https://things2024.azurewebsites.net/category"
+        let url = "https://things2024.azurewebsites.net/category-products"
         
         var parameters: [String: String] = [:]
         
