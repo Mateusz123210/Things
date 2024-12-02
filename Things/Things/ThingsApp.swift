@@ -28,8 +28,8 @@ struct ThingsApp: App {
                         case .categoryProducts(let categoryName):
                             CategoryView(loginStatus: loginStatus, categoryName: categoryName)
                             
-                        case .product(let productName):
-                            ProductView(loginStatus: loginStatus, productName: productName)
+                        case .product(let productName, let categoryName):
+                            ProductView(loginStatus: loginStatus, productName: productName, categoryName: categoryName)
                             
                         case .notes:
                             NotesView( loginStatus: loginStatus)

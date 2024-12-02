@@ -9,7 +9,7 @@ final class Router: ObservableObject {
         case refreshPass
         case categories
         case categoryProducts(categoryName: String)
-        case product(productName: String)
+        case product(productName: String, categoryName: String)
         case notes
         case note(noteName: String)
         case account

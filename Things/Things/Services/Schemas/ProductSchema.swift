@@ -10,6 +10,16 @@ struct ProductFetchSchema: Codable, Hashable{
     let video: String?
     var marked: Bool = false
     
+    init(name: String, categoryName: String, quantity: String, photo: String?, audio: String?, video: String?){
+
+        self.name = name
+        self.categoryName = categoryName
+        self.quantity = quantity
+        self.photo = photo
+        self.audio = audio
+        self.video = video
+    }
+    
     init(from decoder: Decoder) throws {
             var container = try decoder.unkeyedContainer()
             name = try container.decode(String.self)
@@ -36,7 +46,7 @@ struct ProductEditSchema: Codable, Hashable{
     
     var name: String
     var category_name: String
-    var quantity: String?
+    var quantity: String
     var photo: String?
     var audio: String?
     var video: String?

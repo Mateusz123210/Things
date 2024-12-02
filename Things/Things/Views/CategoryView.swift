@@ -444,7 +444,7 @@ struct CategoryView: View{
                                                             }
                                                             
                                                         }else{
-                                                            router.navigate(destination: .product(productName: categoryProducts[index].name))
+                                                            router.navigate(destination: .product(productName: categoryProducts[index].name, categoryName: categoryName))
                                                         }
                                                     }
                                                     productsButtonsBlock = false
@@ -706,7 +706,7 @@ struct CategoryView: View{
                                                             }
                                                             
                                                         }else{
-                                                            router.navigate(destination: .product(productName: categoryProducts[index].name))
+                                                            router.navigate(destination: .product(productName: categoryProducts[index].name, categoryName: categoryName))
                                                         }
                                                     }
                                                     productsButtonsBlock = false
