@@ -82,7 +82,6 @@ struct LoginView: View{
                                     .foregroundStyle(colorScheme == .dark ? .white : .black)
                                     .font(Font.system(size: 24))
                                     .border(Color.gray, width: 1)
-                                    //.padding(.trailing, 50)
                                     .padding(.bottom,(screenHeight > 500 ? (0.02 *          screenHeight) : (0.001 * screenHeight)))
                                     .frame(maxWidth: 0.5 * screenWidth)
                                 Spacer()
@@ -235,8 +234,5 @@ struct LoginView: View{
         screenHeight = UIScreen.main.bounds.height
         screenWidth = UIScreen.main.bounds.width
     }
-    
-    
-    
-    
+ 
 }

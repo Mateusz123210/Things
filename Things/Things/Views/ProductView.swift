@@ -285,7 +285,8 @@ struct ProductView: View{
                                 .padding(.bottom, 16)
                             
                             Audio(audioFileURL: $audioFileURL, audioFileName: $audioFileName, showDocumentPicker: $showDocumentPicker, audioPlayer: $audioPlayer, isPlaying: $isPlaying)
-
+                            
+                            VideoPlayerView()
 
                             .sheet(isPresented: $showingImagePicker) {
                                 ImagePicker(image: $inputImage)
@@ -443,6 +444,8 @@ struct ProductView: View{
                                 .padding(.bottom, 16)
                             
                             Audio(audioFileURL: $audioFileURL, audioFileName: $audioFileName, showDocumentPicker: $showDocumentPicker, audioPlayer: $audioPlayer, isPlaying: $isPlaying)
+                            
+                            VideoPlayerView()
 
 
                             .sheet(isPresented: $showingImagePicker) {

@@ -420,19 +420,11 @@ struct NotesView: View{
                             .background(.lightBlueD6F1FF)
                             .cornerRadius(15)
                             .padding(16)
-                            
-                            
-                            
-                            
+                                                       
                         }
-                        
-                        
-                        
+                
                     }
-                    
-                    
-                    
-                    
+            
                     VStack{
                         HStack{
                             Button(action: {

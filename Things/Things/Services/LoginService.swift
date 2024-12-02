@@ -28,11 +28,7 @@ struct LoginService {
                 guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
                     
                     DispatchQueue.main.async {
-                        //let msg = (response as? HTTPURLResponse)?.statusCode ?? 0
-                        // viewRef.showAlert(message: "Failed with status code: \(msg)")
-                        //let str1 = String(bytes: data, encoding: .utf8)
-                        //viewRef.showAlert(message: str1!)
-                        
+
                         do{
                             let detail = try JSONDecoder().decode(DetailSchema.self, from: data)
                             viewRef.showAlert(message: detail.detail)
@@ -57,7 +53,8 @@ struct LoginService {
             
         }catch {
             DispatchQueue.main.async {
-                viewRef.showAlert(message: "Internal problem occured")            }
+                viewRef.showAlert(message: "Internal problem occured")
+            }
         }
         
         return

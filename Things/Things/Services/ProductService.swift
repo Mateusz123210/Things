@@ -226,7 +226,6 @@ struct ProductService {
         return
     }
     
-    
     func deleteProduct(paramsData: ProductDeleteSchema, loginStatus: LoginStatus, viewRef: CategoryView, enableRefreshToken: Bool = true, tokensCopy: TokensSchema? = nil){
         
         let url = "https://things2024.azurewebsites.net/product"

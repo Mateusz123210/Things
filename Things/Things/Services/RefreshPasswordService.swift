@@ -46,7 +46,8 @@ struct RefreshPasswordService {
             
         }catch {
             DispatchQueue.main.async {
-                viewRef.showAlert(message: "Internal problem occured")            }
+                viewRef.showAlert(message: "Internal problem occured")
+            }
         }
         
         return

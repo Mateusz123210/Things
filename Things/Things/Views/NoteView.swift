@@ -144,7 +144,6 @@ struct NoteView: View{
                     
                     Spacer()
                     
-                    
                     ScrollView{
                         VStack {
                             HStack {
@@ -324,7 +323,6 @@ struct NoteView: View{
                 .frame(alignment: .bottomTrailing)
 
             }
-            
             
         }
         .onAppear {

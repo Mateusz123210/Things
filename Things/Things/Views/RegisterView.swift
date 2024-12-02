@@ -185,12 +185,8 @@ struct RegisterView: View{
                     Alert(title: Text("Error"), message: Text(alertMessage))
                 }
             }
-            
-            
-        
-            
+    
         } .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
-            
             
             if (UIDevice.current.orientation != UIDeviceOrientation.portraitUpsideDown){
                 orientation = UIDevice.current.orientation
