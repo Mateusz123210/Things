@@ -61,7 +61,6 @@ struct CategoryView: View{
     }
     
     func handleFetchError(message: String){
-        print(message)
         showAlert(message: message)
     }
     
@@ -70,7 +69,6 @@ struct CategoryView: View{
         router.navigateToRoot()
     }
     func handleCredentialsError(){
-        print("cre eroor")
         alertMessage = "Internal error occured. You will be logged out!"
         alertType = 3
         showAlert = true

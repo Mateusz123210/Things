@@ -57,7 +57,6 @@ struct CategoriesView: View{
     }
     
     func handleFetchError(message: String){
-        print(message)
         showAlert(message: message)
     }
     
@@ -66,7 +65,6 @@ struct CategoriesView: View{
         router.navigateToRoot()
     }
     func handleCredentialsError(){
-        print("cre eroor")
         alertMessage = "Internal error occured. You will be logged out!"
         alertType = 3
         showAlert = true
@@ -95,7 +93,6 @@ struct CategoriesView: View{
     func confirmAdd() {
 
         if addSchema.name.count == 0 {
-            print("A")
             alertMessage = "Write name!"
             alertType = 1
             showAlert = true

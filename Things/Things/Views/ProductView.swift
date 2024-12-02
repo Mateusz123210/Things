@@ -48,7 +48,6 @@ struct ProductView: View{
     }
     
     func handleFetchError(message: String){
-        print(message)
         showAlert(message: message)
     }
     
@@ -95,7 +94,6 @@ struct ProductView: View{
     }
     
     func backToBrowse() {
-        print("Back")
         router.navPath.removeLast()
     }
 

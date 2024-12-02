@@ -27,14 +27,12 @@ struct NoteView: View{
     }
     
     func noteFetched(note: NoteSchema){
-        print("fetched")
         editSchema.name = note.name
         editSchema.text = note.text
 
     }
     
     func handleFetchError(message: String){
-        print(message)
         showAlert(message: message)
     }
     
@@ -44,7 +42,6 @@ struct NoteView: View{
     }
     
     func handleCredentialsError(){
-        print("cre eroor")
         alertMessage3 = "Internal error occured. You will be logged out!"
         showAlert3 = true
     }
@@ -64,7 +61,6 @@ struct NoteView: View{
     func editNote() {
         
         if editSchema.name.count == 0 {
-            print("A")
             alertMessage = "Write note topic!"
             showAlert = true
             return

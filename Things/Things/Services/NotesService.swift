@@ -277,7 +277,6 @@ struct NotesService{
                     do{
                         
                         let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
-                        print(statusCode)
                         if (statusCode == 401){
                             if(enableRefreshToken == true){
                                 refreshTokenService.refreshToken(loginStatus: loginStatus){ result in
@@ -331,7 +330,6 @@ struct NotesService{
                         }
                         
                     } catch let jsonError {
-                        print("1")
                         viewRef.handleFetchError(message: "Internal problem occured")
                     }
                     

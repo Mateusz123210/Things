@@ -40,7 +40,6 @@ struct NotesView: View{
     }
     
     func handleFetchError(message: String){
-        print(message)
         showAlert(message: message)
     }
     
@@ -49,7 +48,6 @@ struct NotesView: View{
         router.navigateToRoot()
     }
     func handleCredentialsError(){
-        print("cre eroor")
         alertMessage3 = "Internal error occured. You will be logged out!"
         showAlert3 = true
     }
@@ -75,7 +73,6 @@ struct NotesView: View{
     func confirmAdd() {
 
         if addSchema.name.count == 0 {
-            print("A")
             alertMessage = "Write note topic!"
             showAlert = true
             return
