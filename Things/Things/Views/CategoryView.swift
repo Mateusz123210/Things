@@ -25,17 +25,10 @@ struct CategoryView: View{
     @State private var lastBlockedName: String = ""
     @State private var addSchema: ProductAddSchema = ProductAddSchema(name: "", category_name: "", quantity: "", photo: nil, audio: nil, video: nil)
     @State private var editSchema: ProductEditSchema = ProductEditSchema(name: "", category_name: "", quantity: "", photo: nil, audio: nil, video: nil, old_name: "")
+
     @State private var showingImagePicker = false
     @State private var inputImage: UIImage?
     @State private var markingEnabled: Bool = false
-    
-    @State private var audioFileURL: URL? = nil
-    @State private var audioFileName: String? = nil
-    @State private var showDocumentPicker = false
-    @State private var audioPlayer: AVAudioPlayer? = nil
-    @State private var isPlaying = false
-
-
 
     let columns = [
         GridItem(.adaptive(minimum: 152, maximum: 182), spacing: 10)
@@ -398,11 +391,6 @@ struct CategoryView: View{
                                     .background(.lightBlue00A7FF)
                                     .cornerRadius(15)
                                     .padding(.bottom, 16)
-                                
-                                Audio(audioFileURL: $audioFileURL, audioFileName: $audioFileName, showDocumentPicker: $showDocumentPicker, audioPlayer: $audioPlayer, isPlaying: $isPlaying)
-                                
-                                VideoPlayerView()
-
 
                                 .sheet(isPresented: $showingImagePicker) {
                                     ImagePicker(image: $inputImage)
@@ -662,11 +650,6 @@ struct CategoryView: View{
                                     .background(.lightBlue00A7FF)
                                     .cornerRadius(15)
                                     .padding(.bottom, 16)
-                                
-                                Audio(audioFileURL: $audioFileURL, audioFileName: $audioFileName, showDocumentPicker: $showDocumentPicker, audioPlayer: $audioPlayer, isPlaying: $isPlaying)
-                                
-                                VideoPlayerView()
-
 
                                 .sheet(isPresented: $showingImagePicker) {
                                     ImagePicker(image: $inputImage)

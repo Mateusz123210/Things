@@ -39,25 +39,25 @@ struct Audio: View {
         VStack(spacing: 20) {
            // Display selected file name
            if let fileName = audioFileName {
-               Text("Uploaded File: \(fileName)")
-                   .font(.headline)
-                   .padding()
+//               Text("Uploaded File: \(fileName)")
+//                   .font(.headline)
+//                   .padding()
            } else {
-               Text("No audio file selected")
-                   .foregroundColor(.gray)
+//               Text("No audio file selected")
+//                   .foregroundColor(.gray)
            }
            
            // Button to select audio file
-           Button(action: {
-               showDocumentPicker = true
-           }) {
-               Text("Upload Audio")
-                   .foregroundColor(.white)
-                   .padding()
-                   .background(Color.blue)
-                   .cornerRadius(10)
-           }
-           
+//           Button(action: {
+//               showDocumentPicker = true
+//           }) {
+//               Text("Upload Audio")
+//                   .foregroundColor(.white)
+//                   .padding()
+//                   .background(Color.blue)
+//                   .cornerRadius(10)
+//           }
+//           
            // Play and Pause Buttons
            if let _ = audioFileURL {
                HStack(spacing: 20) {

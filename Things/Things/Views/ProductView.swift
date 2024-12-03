@@ -22,16 +22,21 @@ struct ProductView: View{
     @State private var productsFound: Bool = false
     @State private var product: ProductFetchSchema = ProductFetchSchema(name: "", categoryName: "", quantity: "", photo: nil, audio: nil, video: nil)
     @State private var editSchema: ProductEditSchema = ProductEditSchema(name: "", category_name: "", quantity: "", photo: nil, audio: nil, video: nil, old_name: "")
+//    Photo
     @State private var showingImagePicker = false
     @State private var inputImage: UIImage?
     @State private var markingEnabled: Bool = false
-    
+//    Audio
     @State private var audioFileURL: URL? = nil
     @State private var audioFileName: String? = nil
     @State private var showDocumentPicker = false
     @State private var audioPlayer: AVAudioPlayer? = nil
     @State private var isPlaying = false
-
+//    Video
+    @State private var showPicker = false
+    @State private var selectedVideoURL: URL?
+    @State private var player: AVPlayer?
+    
     let productService = ProductService()
         
     func showAlert(message: String){
@@ -43,7 +48,25 @@ struct ProductView: View{
     func productFetched(product: ProductFetchSchema){
 
         self.product = product
-        editSchema = ProductEditSchema(name: product.name, category_name: product.categoryName, quantity: product.quantity, old_name: product.name)
+        if product.audio != nil {
+            if let url = AudioConverter.convertBase64StringToAudio(product.audio!){
+                audioFileURL = url
+            } else {
+                audioFileURL = nil
+            }
+        } else {
+            audioFileURL = nil
+        }
+        if product.video != nil {
+            if let url = VideoConverter.convertBase64StringToVideo(product.video!){
+                selectedVideoURL = url
+            } else {
+                selectedVideoURL = nil
+            }
+        } else {
+            selectedVideoURL = nil
+        }
+        editSchema = ProductEditSchema(name: product.name, category_name: product.categoryName, quantity: product.quantity, photo: product.photo, audio: product.audio, video: product.video, old_name: product.name)
 
     }
     
@@ -98,6 +121,7 @@ struct ProductView: View{
     }
 
     func loadImage() {
+        print("load")
         guard let inputImage = inputImage else { return }
 
         if (inputImage.size.width > 120 || inputImage.size.height > 150){
@@ -286,7 +310,7 @@ struct ProductView: View{
                             
                             Audio(audioFileURL: $audioFileURL, audioFileName: $audioFileName, showDocumentPicker: $showDocumentPicker, audioPlayer: $audioPlayer, isPlaying: $isPlaying)
                             
-                            VideoPlayerView()
+                            VideoPlayerView(showPicker: $showPicker, selectedVideoURL: $selectedVideoURL, player: $player)
 
                             .sheet(isPresented: $showingImagePicker) {
                                 ImagePicker(image: $inputImage)
@@ -445,7 +469,7 @@ struct ProductView: View{
                             
                             Audio(audioFileURL: $audioFileURL, audioFileName: $audioFileName, showDocumentPicker: $showDocumentPicker, audioPlayer: $audioPlayer, isPlaying: $isPlaying)
                             
-                            VideoPlayerView()
+                            VideoPlayerView(showPicker: $showPicker, selectedVideoURL: $selectedVideoURL, player: $player)
 
 
                             .sheet(isPresented: $showingImagePicker) {

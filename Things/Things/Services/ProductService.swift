@@ -21,7 +21,7 @@ struct ProductService {
         let fullURL = URL(string: "\(url)?\(paramString)")!
 
         var request = URLRequest(url: fullURL)
-
+        
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
@@ -461,18 +461,4 @@ struct ProductService {
             }.resume()
         return
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 }

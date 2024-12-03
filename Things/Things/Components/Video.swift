@@ -4,9 +4,9 @@ import PhotosUI
 
 // SwiftUI View to display the video player
 struct VideoPlayerView: View {
-    @State private var showPicker = false
-    @State private var selectedVideoURL: URL?
-    @State private var player: AVPlayer?
+    @Binding var showPicker:Bool
+    @Binding var selectedVideoURL: URL?
+    @Binding var player: AVPlayer?
 
     var body: some View {
         VStack {
@@ -18,17 +18,20 @@ struct VideoPlayerView: View {
                         // Ensure player is set up and starts playing
                         if let videoURL = selectedVideoURL {
                             player = AVPlayer(url: videoURL)
-                            player?.play()
+//                            player?.play()
                         }
                     }
             } else {
-                Button("Select Video from Photos") {
-                    showPicker.toggle()
+                VStack {
+//                    Button("Select Video") {
+//                        showPicker.toggle()
+//                    }
                 }
                 .sheet(isPresented: $showPicker) {
                     // Show the PHPickerViewController
                     PhotoPicker { url in
-                        self.selectedVideoURL = url
+                        selectedVideoURL = url
+                        print(selectedVideoURL)
                     }
                 }
             }
