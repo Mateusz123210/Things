@@ -108,6 +108,7 @@ struct RefreshPasswordView: View{
                         .frame(maxWidth: .infinity, alignment: .leading)
                     VStack{
                         TextField("", text: $email)
+                            .autocapitalization(.none)
                             .background(colorScheme == .dark ? .black : .white)
                             .foregroundStyle(colorScheme == .dark ? .white : .black)
                             .font(Font.system(size: 24))

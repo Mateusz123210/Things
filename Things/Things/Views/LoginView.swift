@@ -78,6 +78,7 @@ struct LoginView: View{
                         VStack{
                             HStack{
                                 TextField("", text: $email)
+                                    .autocapitalization(.none)
                                     .background(colorScheme == .dark ? .black : .white)
                                     .foregroundStyle(colorScheme == .dark ? .white : .black)
                                     .font(Font.system(size: 24))
@@ -155,6 +156,7 @@ struct LoginView: View{
                         .frame(maxWidth: .infinity, alignment: .leading)
                     VStack{
                         TextField("", text: $email)
+                            .autocapitalization(.none)
                             .background(colorScheme == .dark ? .black : .white)
                             .foregroundStyle(colorScheme == .dark ? .white : .black)
                             .font(Font.system(size: 24))
